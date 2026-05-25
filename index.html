@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Roteiro Japão">
+<meta name="theme-color" content="#0d1117">
+<meta name="format-detection" content="telephone=no">
+<title>Japão Pela Primeira Vez</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --gold:#f0c040;--dark:#0d1117;--panel:#161b22;--border:#30363d;
+  --text:#e6edf3;--muted:#8b949e;--blue:#58a6ff;--green:#3fb950;
+  --red:#ff7b72;--purple:#bc8cff;--orange:#ffb347;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--dark);font-family:system-ui,-apple-system,sans-serif;color:var(--text);}
+#deck{width:100%;height:100%;position:relative;}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .35s ease,transform .35s ease;transform:translateX(40px);}
+.slide.active{opacity:1;pointer-events:all;transform:translateX(0);}
+.slide.prev{opacity:0;transform:translateX(-40px);}
+#nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(13,17,23,.97);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:8px 14px calc(8px + env(safe-area-inset-bottom));gap:8px;}
+.nbtn{background:var(--panel);border:1px solid var(--border);color:var(--text);padding:7px 18px;border-radius:20px;cursor:pointer;font-size:.78rem;font-weight:600;transition:all .2s;}
+.nbtn:hover{background:var(--gold);color:var(--dark);}
+.nbtn:disabled{opacity:.3;cursor:not-allowed;}
+#pw{flex:1;background:var(--border);height:3px;border-radius:2px;min-width:60px;}
+#pb{height:100%;background:var(--gold);border-radius:2px;transition:width .35s;}
+#sc{color:var(--muted);font-size:.72rem;white-space:nowrap;}
+#cn{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(13,17,23,.97);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:5px;padding:calc(6px + env(safe-area-inset-top)) 10px 6px;overflow-x:auto;scrollbar-width:none;}
+#cn::-webkit-scrollbar{display:none;}
+.cb{background:var(--panel);border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:20px;cursor:pointer;font-size:.68rem;font-weight:600;white-space:nowrap;transition:all .2s;flex-shrink:0;}
+.cb:hover{border-color:var(--gold);color:var(--gold);}
+.cb.on{background:var(--gold);color:var(--dark);border-color:var(--gold);}
+.pad{padding:48px clamp(12px,3vw,52px) 68px;overflow-y:auto;height:100%;}
+.pad::-webkit-scrollbar{width:4px;}
+.pad::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+/* tipografia */
+.stag{font-size:.58rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+h1{font-size:clamp(1.8rem,5.5vw,3.8rem);font-weight:900;line-height:1.05;color:#fff;}
+h2{font-size:clamp(1rem,2.5vw,1.75rem);font-weight:800;color:#fff;line-height:1.1;margin-bottom:12px;}
+.sub{font-size:.75rem;line-height:1.65;color:var(--muted);}
+.lbl{font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+/* cards */
+.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;}
+.cg{border-top:3px solid var(--gold);}
+.cgr{border-top:3px solid var(--green);}
+/* grids */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+@media(max-width:680px){.g2,.g3,.g4{grid-template-columns:1fr 1fr;}}
+/* tabela */
+.tbl{width:100%;border-collapse:collapse;font-size:.72rem;}
+.tbl th{background:var(--gold);color:var(--dark);padding:6px 8px;text-align:left;font-weight:700;}
+.tbl td{padding:5px 8px;border-bottom:1px solid var(--border);color:var(--muted);}
+.tbl tr:nth-child(even) td{background:rgba(255,255,255,.02);}
+.tbl td:first-child{color:var(--text);}
+/* timeline */
+.tl{list-style:none;}
+.tl li{display:flex;gap:9px;padding:6px 0;border-bottom:1px solid var(--border);}
+.tl .t{min-width:64px;color:var(--gold);font-weight:700;font-size:.68rem;padding-top:2px;flex-shrink:0;}
+.tl .ic{font-size:.92rem;flex-shrink:0;}
+.tl .tx{font-size:.75rem;color:var(--muted);line-height:1.55;}
+/* badge obrigatorio */
+.obrig{display:inline-block;background:rgba(240,192,64,.13);border:1px solid rgba(240,192,64,.4);border-radius:5px;padding:2px 7px;font-size:.7rem;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+/* badges */
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.62rem;font-weight:700;}
+.bg{background:rgba(240,192,64,.15);color:var(--gold);border:1px solid rgba(240,192,64,.3);}
+.bb{background:rgba(88,166,255,.15);color:var(--blue);border:1px solid rgba(88,166,255,.3);}
+.bgr{background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.3);}
+.br{background:rgba(255,123,114,.15);color:var(--red);border:1px solid rgba(255,123,114,.3);}
+.bpu{background:rgba(188,140,255,.15);color:var(--purple);border:1px solid rgba(188,140,255,.3);}
+.bor{background:rgba(255,179,71,.15);color:var(--orange);border:1px solid rgba(255,179,71,.3);}
+/* blocos laterais */
+.tip{background:rgba(240,192,64,.07);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:8px 11px;margin-top:8px;}
+.tip .tl2{font-size:.57rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+.mem{background:rgba(188,140,255,.07);border-left:3px solid var(--purple);border-radius:0 8px 8px 0;padding:8px 11px;margin-top:8px;}
+.mem .mtl{font-size:.57rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--purple);margin-bottom:3px;}
+.prem{background:rgba(240,192,64,.09);border:1px solid rgba(240,192,64,.22);border-radius:9px;padding:9px 11px;margin-top:8px;}
+.prem .ptl{font-size:.57rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+.only{background:rgba(63,185,80,.07);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:8px 11px;margin-top:8px;}
+.only .otl{font-size:.57rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:3px;}
+.extra{background:rgba(88,166,255,.07);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:8px 11px;margin-top:8px;}
+.extra .etl{font-size:.57rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:3px;}
+.shop{background:rgba(188,140,255,.07);border-left:3px solid var(--purple);border-radius:0 8px 8px 0;padding:8px 11px;margin-top:8px;}
+.shop .stl{font-size:.57rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--purple);margin-bottom:3px;}
+.alert{background:rgba(255,123,114,.08);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:8px 11px;margin-top:8px;}
+.alert .atl{font-size:.57rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:3px;}
+.concierge{background:linear-gradient(135deg,rgba(240,192,64,.11),rgba(188,140,255,.07));border:1px solid rgba(240,192,64,.3);border-radius:10px;padding:10px 13px;margin-top:9px;}
+.concierge .ctl{font-size:.57rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+.kids{background:linear-gradient(135deg,rgba(255,105,180,.16),rgba(255,140,200,.07));border:1.5px solid rgba(255,105,180,.5);border-radius:11px;padding:11px 13px;margin-top:9px;box-shadow:0 2px 14px rgba(255,105,180,.12);}
+.kids .ktl{font-size:.6rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#ff69b4;margin-bottom:5px;display:flex;align-items:center;gap:5px;}
+.kidsb{background:linear-gradient(135deg,rgba(88,166,255,.16),rgba(120,180,255,.07));border:1.5px solid rgba(88,166,255,.5);border-radius:11px;padding:11px 13px;margin-top:9px;box-shadow:0 2px 14px rgba(88,166,255,.12);}
+.kidsb .ktl{font-size:.6rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#58a6ff;margin-bottom:5px;display:flex;align-items:center;gap:5px;}
+ul.ul{padding-left:14px;margin:0;}
+ul.ul li{font-size:.73rem;color:var(--muted);line-height:1.85;}
+ul.ul li strong{color:var(--text);}
+/* cabeçalho de dia */
+.dh{background:linear-gradient(90deg,rgba(240,192,64,.1),transparent);border-left:4px solid var(--gold);border-radius:0 9px 9px 0;padding:10px 13px;margin-bottom:13px;}
+.dh .dd{font-size:.57rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);}
+.dh .dt{font-size:clamp(.85rem,2vw,1.3rem);font-weight:800;color:#fff;margin-top:2px;}
+.dh .dm{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap;}
+/* hotel box */
+.hb{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:9px 12px;margin-top:7px;}
+.hb .hl{font-size:.57rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.hb .hn{font-weight:700;color:var(--text);font-size:.8rem;}
+.hb .hs{font-size:.7rem;color:var(--muted);margin-top:2px;line-height:1.55;}
+/* tempo */
+.wx{display:inline-flex;align-items:center;gap:5px;background:rgba(88,166,255,.09);border:1px solid rgba(88,166,255,.2);border-radius:8px;padding:5px 10px;font-size:.7rem;color:var(--blue);margin-top:6px;margin-bottom:8px;}
+/* resumo */
+.rd{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:9px 12px;position:relative;overflow:hidden;}
+.rd::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;}
+.rd.tc::before{background:#58a6ff;}
+.rd.os::before{background:#ff7b72;}
+.rd.ky::before{background:#bc8cff;}
+.rd.fj::before{background:#3fb950;}
+.rd.tq::before{background:#f0c040;}
+.rd.tr::before{background:#ffb347;}
+.rd .rday{font-size:.57rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;}
+.rd .rtitle{font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:3px;}
+.rd .rinfo{font-size:.67rem;color:var(--muted);line-height:1.55;}
+/* erros */
+.yerr{background:rgba(255,123,114,.08);border:1px solid rgba(255,123,114,.22);border-radius:10px;padding:10px 13px;margin-bottom:9px;}
+.yerr .etit{font-size:.71rem;font-weight:800;color:var(--red);margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px;}
+.yerr .efix{font-size:.69rem;color:var(--green);margin-top:4px;font-weight:600;}
+.yval{font-size:.67rem;color:var(--gold);font-weight:700;margin-left:3px;}
+/* capa */
+#s0{background:radial-gradient(ellipse at 28% 55%,#1a0a2e 0%,#0d1117 65%);}
+.jp{position:absolute;right:clamp(8px,4vw,60px);top:50%;transform:translateY(-50%);font-size:clamp(2.5rem,7vw,6rem);color:rgba(240,192,64,.06);letter-spacing:.2em;line-height:1.4;writing-mode:vertical-rl;user-select:none;pointer-events:none;}
+.pill{background:rgba(240,192,64,.1);border:1.5px solid rgba(240,192,64,.28);border-radius:24px;padding:7px 14px;font-size:.76rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px;margin:3px;color:var(--text);}
+.pill:hover{background:var(--gold);color:var(--dark);}
+/* botões de ação da capa */
+.abtn{background:var(--panel);border:1px solid var(--border);color:var(--muted);padding:9px 16px;border-radius:9px;cursor:pointer;font-size:.72rem;font-weight:600;transition:all .2s;}
+.abtn:hover{background:var(--gold);color:var(--dark);border-color:var(--gold);}
+/* divisor grupo */
+.divgroup{background:rgba(88,166,255,.07);border:1px solid rgba(88,166,255,.2);border-radius:8px;padding:8px 11px;margin-bottom:10px;font-size:.72rem;color:var(--blue);}
+/* final */
+#sfin{background:radial-gradient(ellipse at 50% 50%,#1a0a2e 0%,#0d1117 70%);text-align:center;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes fadeup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.slide.active .dh,.slide.active h2,.slide.active .tl li{animation:fadeup .3s ease both;}
+.slide.active .tl li:nth-child(2){animation-delay:.04s;}
+.slide.active .tl li:nth-child(3){animation-delay:.08s;}
+.slide.active .tl li:nth-child(4){animation-delay:.12s;}
+.slide.active .tl li:nth-child(5){animation-delay:.16s;}
+@media print{
+  html,body{background:#0d1117 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;height:auto !important;overflow:visible !important;}
+  #cn,#prog,#nav,#s0 .pill,.abtn{display:none !important;}
+  #deck{position:static !important;height:auto !important;overflow:visible !important;display:block !important;}
+  .slide{display:block !important;position:relative !important;inset:auto !important;top:auto !important;left:auto !important;opacity:1 !important;transform:none !important;pointer-events:auto !important;page-break-after:always;break-after:page;height:auto !important;min-height:0 !important;width:100% !important;padding:6mm !important;box-sizing:border-box;overflow:visible !important;}
+  .slide:last-child{page-break-after:auto;}
+  .slide .dh,.slide h2,.slide .tl li{animation:none !important;opacity:1 !important;transform:none !important;}
+  .g2,.g3,.g4{display:block !important;}
+  .g2>div,.g3>div,.g4>div{margin-bottom:8px;break-inside:avoid;}
+  .concierge,.kids,.kidsb,.mem,.prem,.extra,.alert,.only,.shop,.tip{break-inside:avoid;}
+}
+</style>
+</head>
+<body>
+
+<div id="cn">
+  <button class="cb" onclick="gc('s0')">🎌 Início</button>
+  <button class="cb" onclick="gc('s2')">🗺️ Resumo</button>
+  <button class="cb" onclick="gc('scl')">✅ Checklist</button>
+  <button class="cb" onclick="gc('stochigi')">🏠 Tochigi</button>
+  <button class="cb" onclick="gc('sd07')">🥩 07 Osaka</button>
+  <button class="cb" onclick="gc('sd08')">🎢 08 Universal</button>
+  <button class="cb" onclick="gc('sd09')">⛩️ 09 Quioto</button>
+  <button class="cb" onclick="gc('sd10')">🏔️ 10 Fuji</button>
+  <button class="cb" onclick="gc('sd11')">🚄 11 Fuji→Tóquio</button>
+  <button class="cb" onclick="gc('sd12')">🌇 12 Asakusa</button>
+  <button class="cb" onclick="gc('sd13')">🛍️ 13 Kisarazu</button>
+  <button class="cb" onclick="gc('sd14')">🧁 14 Harajuku</button>
+  <button class="cb" onclick="gc('sd15')">🏰 15 Disney</button>
+  <button class="cb" onclick="gc('sd16')">💎 16 Ginza</button>
+  <button class="cb" onclick="gc('sd17')">✈️ 17 Partida</button>
+  <button class="cb" onclick="gc('stransport')">🚄 Logística</button>
+  <button class="cb" onclick="gc('shotel')">🏨 Hotéis</button>
+  <button class="cb" onclick="gc('sfood')">🍜 Gastronomia</button>
+  <button class="cb" onclick="gc('sclima')">🌡️ Clima</button>
+  <button class="cb" onclick="gc('sapps')">📱 Apps</button>
+  <button class="cb" onclick="gc('scompras')">🛍️ Compras</button>
+  <button class="cb" onclick="gc('sjetlag')">✈️ Voo & Jet Lag</button>
+  <button class="cb" onclick="gc('setiqueta')">🎎 Etiqueta</button>
+  <button class="cb" onclick="gc('strens')">🚆 Trens & Metrô</button>
+  <button class="cb" onclick="gc('serros')">⚠️ Erros</button>
+  <button class="cb" onclick="gc('spalavras')">🗣️ Japonês</button>
+  <button class="cb" onclick="gc('s1')">📋 Geral</button>
+  <button class="cb" onclick="gc('sfin')">🌸 Final</button>
+</div>
+
+<div id="deck">
+
+<!-- ══ CAPA ══ -->
+<div class="slide active" id="s0">
+  <div class="pad" style="display:flex;flex-direction:column;justify-content:center;min-height:100%;gap:0;">
+    <div class="jp">日本旅行<br>二〇二六</div>
+    <div class="stag">Roteiro Exclusivo · 2026</div>
+    <h1 style="margin-bottom:6px">Japão<br><span style="color:var(--gold)">Pela Primeira Vez</span></h1>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:18px;line-height:1.8">Família Hamada · 8 Pessoas · 04 → 17 de junho · 14 dias</p>
+    <div style="display:flex;flex-wrap:wrap;margin-bottom:14px;">
+      <button class="pill" onclick="gc('stochigi')" style="color:var(--blue);border-color:rgba(88,166,255,.35);">🏠 Tochigi</button>
+      <button class="pill" onclick="gc('sd07')" style="color:var(--red);border-color:rgba(255,123,114,.35);">🍜 Osaka</button>
+      <button class="pill" onclick="gc('sd09')" style="color:var(--purple);border-color:rgba(188,140,255,.35);">⛩️ Quioto</button>
+      <button class="pill" onclick="gc('sd10')" style="color:var(--green);border-color:rgba(63,185,80,.35);">🏔️ Monte Fuji</button>
+      <button class="pill" onclick="gc('sd12')" style="color:var(--gold);border-color:rgba(240,192,64,.35);">🗼 Tóquio</button>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:7px;">
+      <button class="abtn" onclick="gc('s1')">📋 Geral</button>
+      <button class="abtn" onclick="gc('s2')">🗺️ Resumo</button>
+      <button class="abtn" onclick="gc('scl')">✅ Checklist</button>
+      <button class="abtn" onclick="gc('stransport')">🚄 Logística</button>
+      <button class="abtn" onclick="gc('shotel')">🏨 Acomodação</button>
+      <button class="abtn" onclick="gc('sfood')">🍜 Gastronomia</button>
+      <button class="abtn" onclick="gc('setiqueta')">🎎 Dicas</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ GERAL ══ -->
+<div class="slide" id="s1">
+  <div class="pad">
+    <div class="stag">Visão Geral</div>
+    <h2>A Viagem em Números</h2>
+    <div class="g4" style="margin-bottom:14px;">
+      <div class="card cg"><div style="font-size:1.5rem;margin-bottom:5px">👥</div><div class="lbl">Viajantes</div><div style="font-weight:700;font-size:.9rem">8 pessoas</div><div class="sub">2 idosos · 4 adultos<br>2 crianças (6 anos)</div></div>
+      <div class="card cg"><div style="font-size:1.5rem;margin-bottom:5px">📅</div><div class="lbl">Duração</div><div style="font-weight:700;font-size:.9rem">14 dias</div><div class="sub">04/06 → 17/06 · Narita</div></div>
+      <div class="card cg"><div style="font-size:1.5rem;margin-bottom:5px">🏙️</div><div class="lbl">Destinos</div><div style="font-weight:700;font-size:.9rem">5 cidades</div><div class="sub">Tochigi · Osaka · Quioto<br>Fuji · Tóquio</div></div>
+      <div class="card cg"><div style="font-size:1.5rem;margin-bottom:5px">💰</div><div class="lbl">Orçamento Est.</div><div style="font-weight:700;font-size:.9rem">~R$ 85.000</div><div class="sub">8 pessoas · excl. voos</div></div>
+    </div>
+    <div class="g3">
+      <div class="card"><div class="lbl" style="margin-bottom:6px">Confirmado ✅</div><div class="sub" style="line-height:2.2">🚌 Ônibus noturno 06/06<br>🎢 USJ (08/06)<br>🏠 Casa da família (04–06/06)</div></div>
+      <div class="card"><div class="lbl" style="color:var(--orange);margin-bottom:6px">📌 Reservas Antecipadas</div><div class="sub" style="line-height:2.2;margin-bottom:7px">🏰 Disney Tokyo (15/06)<br>🎢 Express Pass USJ (08/06)<br>🌇 Shibuya Sky (12 e 14/06)</div><div style="background:rgba(255,179,71,.08);border-radius:7px;padding:6px 9px;font-size:.68rem;color:var(--orange)">⚠️ Reserve com semanas de antecedência — os ingressos esgotam rapidamente.</div></div>
+      <div class="card"><div class="lbl" style="margin-bottom:6px">Perfil 🎯</div><div class="sub" style="line-height:2.2">Ritmo confortável<br>Máx. 3 atrações por dia<br>Experiências memoráveis</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RESUMO ══ -->
+<div class="slide" id="s2">
+  <div class="pad">
+    <div class="stag">Rota & Calendário</div>
+    <h2>Resumo da Viagem</h2>
+    <div style="background:rgba(255,179,71,.07);border:1px solid rgba(255,179,71,.22);border-radius:8px;padding:8px 12px;font-size:.7rem;color:var(--orange);margin-bottom:12px;">📌 <strong>Reservar com antecedência:</strong> Disney Tokyo · Express Pass USJ · Shibuya Sky (12 e 14/06) · Fuji Excursion · KidZania — os ingressos costumam esgotar rapidamente. <strong style="color:var(--green)">Já comprados:</strong> USJ, TeamLab, ônibus noturno, hotéis.</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;">
+      <div class="rd tc"><div class="rday" style="color:#58a6ff">Qui 04/06 · Tochigi</div><div class="rtitle">✈️ Chegada Narita</div><div class="rinfo">Imigração · eSIM · Família · 22°C ☁️</div></div>
+      <div class="rd tc"><div class="rday" style="color:#58a6ff">Sex 05/06 · Tochigi</div><div class="rtitle">🌸 Dia Tsuyoshi</div><div class="rinfo">Passeio livre · 24°C 🌦️</div></div>
+      <div class="rd tr"><div class="rday" style="color:var(--orange)">Sáb 06/06 · Tochigi → Osaka</div><div class="rtitle">🛍️ OUTLET (se sobrar tempo) → 🚌 Ônibus 21h20 ✅</div><div class="rinfo">Sano Premium Outlets · Ônibus noturno · 24°C</div></div>
+      <div class="rd os"><div class="rday" style="color:#ff7b72">Dom 07/06 · Osaka 1</div><div class="rtitle">⭐ KUROMON + UMEDA SKY + DOTONBORI</div><div class="rinfo">Mercado · Mirante · Gastronomia · 27°C</div></div>
+      <div class="rd os"><div class="rday" style="color:#ff7b72">Seg 08/06 · Osaka 2</div><div class="rtitle">🎢 Universal Studios Japan</div><div class="rinfo">Harry Potter · Nintendo World · 28°C</div></div>
+      <div class="rd ky"><div class="rday" style="color:#bc8cff">Ter 09/06 · Quioto</div><div class="rtitle">⭐ FUSHIMI + ARASHIYAMA + NISHIKI</div><div class="rinfo">10.000 torii · Bambuzal · Mercado · 26°C</div></div>
+      <div class="rd fj"><div class="rday" style="color:#3fb950">Qua 10/06 · Monte Fuji 1</div><div class="rtitle">♨️ CHEGADA · LAGO · ONSEN</div><div class="rinfo">Check-in à beira do lago · Onsen · Vista do Fuji · 21°C</div></div>
+      <div class="rd fj"><div class="rday" style="color:#3fb950">Qui 11/06 · Monte Fuji 2 → Tóquio</div><div class="rtitle">⭐ PAGODA + KAWAGUCHIKO → 🚆 FUJI EXCURSION</div><div class="rinfo">Acorde 5h30 · 398 degraus · Oishi Park · Fuji Excursion → Asakusa · 22°C</div></div>
+      <div class="rd tq"><div class="rday" style="color:#f0c040">Sex 12/06 · Tóquio 1</div><div class="rtitle">⭐ ASAKUSA + AKIHABARA + SHIBUYA SKY (Grupo 1) · 🌊 DISNEYSEA</div><div class="rinfo">Família se divide · Shibuya Sky 17h: Mãe, Mary, Ké, Diogo · 25°C</div></div>
+      <div class="rd tq"><div class="rday" style="color:#f0c040">Sáb 13/06 · Tóquio 2</div><div class="rtitle">⭐ MITSUI KISARAZU + 🌸 KIDZANIA + OMOIDE YOKOCHO</div><div class="rinfo">330 lojas · Opção kids · Yokocho · 26°C</div></div>
+      <div class="rd tq"><div class="rday" style="color:#f0c040">Dom 14/06 · Tóquio 3</div><div class="rtitle">⭐ HARAJUKU + GYUKATSU + SHIBUYA SKY (Grupo 2)</div><div class="rinfo">Takeshita · Wagyu · Shibuya Sky 17h: Mari, Hell · 26°C</div></div>
+      <div class="rd tq"><div class="rday" style="color:#f0c040">Seg 15/06 · Tóquio 4</div><div class="rtitle">⭐ DISNEY TOKYO</div><div class="rinfo">Disneyland · Electrical Parade · 27°C</div></div>
+      <div class="rd tq"><div class="rday" style="color:#f0c040">Ter 16/06 · Tóquio 5</div><div class="rtitle">⭐ TSUKIJI + GINZA + TEAMLAB + ODAIBA</div><div class="rinfo">Mercado · Uniqlo · Arte imersiva · Jantar · 26°C</div></div>
+      <div class="rd tr"><div class="rday" style="color:var(--orange)">Qua 17/06 · Partida</div><div class="rtitle">✈️ Tóquio → Brasil</div><div class="rinfo">Asakusa → Narita (Keisei) 10h30 · Embarque ~15h · Voo 20h25</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CHECKLIST ══ -->
+<div class="slide" id="scl">
+  <div class="pad">
+    <div class="stag">Antes de Partir</div>
+    <h2>✅ Checklist Completo</h2>
+    <div class="g2" style="gap:16px;margin-top:8px;">
+      <div>
+        <div class="lbl" style="color:var(--green);margin-bottom:7px">Confirmado ✅</div>
+        <div id="cl1"></div>
+        <div style="height:14px"></div>
+        <div class="lbl" style="color:var(--orange);margin-bottom:5px">📌 Reservas Recomendadas Antecipadamente</div>
+        <div style="background:rgba(255,179,71,.07);border-radius:7px;padding:6px 10px;font-size:.68rem;color:var(--orange);margin-bottom:8px">⚠️ Reserve com semanas de antecedência — os ingressos costumam esgotar rapidamente.</div>
+        <div id="cl2"></div>
+      </div>
+      <div>
+        <div class="lbl" style="margin-bottom:7px">💳 Dinheiro & Documentos</div>
+        <div id="cl3"></div>
+        <div style="height:14px"></div>
+        <div class="lbl" style="margin-bottom:7px">📱 Apps — Instalar Antes</div>
+        <div id="cl4"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOCHIGI ══ -->
+<div class="slide" id="stochigi">
+  <div class="pad">
+    <div class="stag">04 – 06 de junho · Tochigi</div>
+    <div class="dh"><div class="dd">Capítulo 1 · 04–06/06</div><div class="dt">🏠 Tochigi — Com a Família Japonesa</div><div class="dm"><span class="badge bgr">Ritmo Leve</span><span class="badge bb">2 noites · Casa da Família</span></div></div>
+    <div class="g2" style="gap:14px;">
+      <div>
+        <ul class="tl">
+          <li><div class="t">Qui 04/06</div><div class="ic">✈️</div><div class="tx"><strong>Chegada a Narita → Tochigi.</strong><br><br>
+            🛂 <strong style="color:var(--gold)">IMIGRAÇÃO — CADASTRE-SE ANTES:</strong> faça o pré-cadastro no <a href="https://vjw.digital.go.jp" target="_blank" rel="noopener" style="color:var(--blue);font-weight:700;text-decoration:none;">Visit Japan Web ↗</a> (site oficial do governo) até <strong>6 horas antes do pouso</strong>. Preencha imigração + alfândega e gere o QR code — no aeroporto vocês passam num único totem, sem papelada. Tire print do QR (o wi-fi do aeroporto cai com muita gente).<br><br>
+            📶 <strong style="color:var(--gold)">eSIM / SIM:</strong> Ative o eSIM no avião ao pousar (Airalo). Ou compre SIM em Narita — Sakura Mobile ou IIJmio.<br><br>
+            😴 <strong style="color:var(--gold)">JET LAG:</strong> Se chegar à noite, durma logo. Se chegar de manhã, fique acordado até às 21h. Melatonina 0,5 mg ajuda. 🌡️ 22°C ☁️</div></li>
+          <li><div class="t">Sex 05/06</div><div class="ic">🐄</div><div class="tx"><strong>Dia em família — Rindo-ko Family Bokujo.</strong> Fazenda-parque no planalto de Nasu: contato com animais, atrações, laticínios artesanais de vaca Jersey e vista do lago com as montanhas de Nasu ao fundo. Perfeito para as crianças e para os avós. <a href="https://www.rindo.co.jp/" target="_blank" rel="noopener" style="color:var(--blue);font-weight:700;text-decoration:none;">rindo.co.jp ↗</a> · 24°C 🌦️</div></li>
+          <li><div class="t">Sáb 06/06</div><div class="ic">🛍️</div><div class="tx"><strong>Dia livre + outlet (se sobrar tempo).</strong> Antes do ônibus noturno, vale um outlet na própria Tochigi — ótimo para garantir tênis e marcas a preço de outlet logo no começo da viagem. <em>Veja a recomendação ao lado.</em> 24°C 🌧️</div></li>
+          <li><div class="t">21h20</div><div class="ic">🚌</div><div class="tx"><strong>Embarque no ônibus noturno</strong> Tochigi → Osaka ✅</div></li>
+        </ul>
+        <div class="mem"><div class="mtl">💜 Memória Para Sempre</div><div class="sub" style="font-size:.74rem">Leve um <strong>caderno em branco</strong>. Nos templos japoneses existe a tradição do <em>goshuin</em> — carimbo e caligrafia feitos à mão por um monge, direto no papel. Cada local tem o seu, único. Ao final da viagem, você terá um diário impossível de comprar em qualquer loja do mundo.</div></div>
+        <div class="only"><div class="otl">Só Japoneses Fazem</div><ul class="ul">
+          <li>Comprar onigiri e café quente na máquina antes do ônibus — ¥300 <span class="yval">(~R$9,60)</span></li>
+          <li>Dobrar o lixo e devolvê-lo ao motorista ao desembarcar</li>
+        </ul></div>
+      </div>
+      <div>
+        <div class="concierge"><div class="ctl">🔑 Concierge — O Que Ninguém Conta</div><div class="sub" style="font-size:.74rem">Ao chegar à casa da família, leve um presente embrulhado em papel — chocolate, cachaça ou café brasileiro. No Japão, presentes são esperados em visitas. Esse gesto cria uma conexão que dura a viagem toda.<br><br>Antes de dormir, deixe os sapatos virados para fora na entrada da casa (<em>genkan</em>). É automático para japoneses e demonstra respeito cultural imediato.</div></div>
+        <div class="prem"><div class="ptl">💴 Tax Free — Sempre com o Passaporte</div><div class="sub" style="font-size:.74rem">Reembolso de <strong>10% de imposto</strong> em compras acima de <strong>¥5.000</strong> <span class="yval">(~R$160)</span> na mesma loja.<br><br>✅ <strong>Passaporte físico obrigatório</strong> — sem ele, não há desconto.<br>✅ Peça: <strong>"Tax Free, please"</strong><br>✅ Anote tudo na aba <strong>'Compras'</strong> deste roteiro para controlar os gastos do grupo.<br>✅ Válido em roupas, cosméticos, eletrônicos e souvenirs. Não se aplica a restaurantes.</div></div>
+        <div class="extra"><div class="etl">🛍️ Se Sobrar Tempo — 2 Outlets em Tochigi</div><div class="sub" style="font-size:.74rem">
+          <strong style="color:var(--green)">✅ Recomendado para o dia 06/06: Sano Premium Outlets.</strong> O maior outlet da região de Kanto — cerca de 180 lojas em cenário que imita uma cidade da costa leste dos EUA. Tem Armani, Coach, Gap, Adidas, Asics, Columbia e <strong>39 lojas de marcas infantis</strong> (Anna Sui Mini, Miki House). Ônibus direto de Tóquio/Shinjuku (~90 min) ou trem até a estação Sano + ônibus (~20 min).<br><br>
+          <strong style="color:var(--text)">Alternativa mais perto de Nasu: Nasu Garden Outlet.</strong> 148 lojas de moda, esporte e lifestyle, com shuttle gratuito a partir da estação Nasu-Shiobara — prático se a família estiver no planalto de Nasu.<br><br>
+          Aberto das 10h às 20h. Leve o passaporte para o Tax Free.
+        </div></div>
+        <div class="tip"><div class="tl2">🍽️ O Que Comer</div><div class="sub" style="font-size:.74rem">Jantar em família · Gyoza de Utsunomiya · Onigiri no conbini ~¥130 <span class="yval">(~R$4,16)</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 07 OSAKA ══ -->
+<div class="slide" id="sd07">
+  <div class="pad">
+    <div class="stag">07 de junho · Domingo · Osaka · Dia 1</div>
+    <div class="dh"><div class="dd">Osaka · Dia 1</div><div class="dt">🥩 Kuromon + Umeda Sky + Dotonbori</div><div class="dm"><span class="badge bg">Moderado</span><span class="badge bb">Dormir em Osaka · 3 noites</span></div></div>
+    <div class="wx">🌡️ 27°C · 🌦️ Pancadas · ☔ 55%</div>
+    <div class="g2" style="gap:14px;">
+      <div>
+        <ul class="tl">
+          <li><div class="t">Manhã</div><div class="ic">🚌</div><div class="tx">Chegada a Osaka. Malas no hotel. Café no conbini.</div></li>
+          <li><div class="t">09:30</div><div class="ic">🥩</div><div class="tx"><span class="obrig">⭐ KUROMON MARKET — PARADA OBRIGATÓRIA</span><br>"A Cozinha de Osaka" desde 1902. 170 barracas. Wagyu na brasa, vieiras abertas, tamagoyaki gigante. Veja tudo antes de comprar — os melhores ficam no meio do corredor.</div></li>
+          <li><div class="t">11:30</div><div class="ic">🏯</div><div class="tx"><strong>Castelo de Osaka</strong> — exterior e fosso. Fotogênico.</div></li>
+          <li><div class="t">13:00</div><div class="ic">🍽️</div><div class="tx">Almoço: Okonomiyaki — você mesmo grelha na chapa da mesa!</div></li>
+          <li><div class="t">15:30</div><div class="ic">🌤️</div><div class="tx"><span class="obrig">⭐ UMEDA SKY BUILDING — PARADA OBRIGATÓRIA</span><br>Mirante 360° a 173 m, ao ar livre, sem vidro. ¥1.500 <span class="yval">(~R$48)</span> — chegue antes do pôr do sol.</div></li>
+          <li><div class="t">18:00</div><div class="ic">🎆</div><div class="tx"><span class="obrig">⭐ DOTONBORI — PARADA OBRIGATÓRIA</span><br>Glico Man iluminado, letreiros de neon. Coma em pé na rua.</div></li>
+          <li><div class="t">19:30</div><div class="ic">🐙</div><div class="tx">Jantar: Takoyaki Aizu + Kushikatsu Daruma. Coma de pé.</div></li>
+        </ul>
+      </div>
+      <div>
+        <div class="concierge"><div class="ctl">🔑 Concierge — O Que Ninguém Conta</div><div class="sub" style="font-size:.74rem">No Kuromon, chegue antes das 10h — os vendedores ainda estão montando as barracas e param para conversar. Peça para fotografar enquanto grelham. Você vai ganhar a melhor peça do balcão. Depois das 11h, você já é só mais um turista na fila.</div></div>
+        <div class="mem"><div class="mtl">💜 Memória Para Sempre</div><div class="sub" style="font-size:.74rem">Vieira na brasa no Kuromon às 9h30, com fumaça subindo pelo corredor. O Umeda Sky ao pôr do sol, com Osaka inteira se acendendo lá embaixo. Dois momentos no mesmo dia que nenhuma foto captura completamente.</div></div>
+        <div class="only"><div class="otl">Só Turistas × Só Japoneses</div><ul class="ul">
+          <li>🗺️ <strong>Turista:</strong> foto cruzando a linha do Glico Man</li>
+          <li>🇯🇵 <strong>Japonês:</strong> <em>tachinomi</em> (bar de pé) com cerveja de máquina ¥200 <span class="yval">(~R$6,40)</span></li>
+        </ul></div>
+        <div class="extra"><div class="etl">Se Sobrar Tempo…</div><ul class="ul">
+          <li><strong>Nara Park</strong> — cervos sagrados, Todai-ji (Buda 15 m) · Trem ~40 min, ¥640 <span class="yval">(~R$20,48)</span></li>
+        </ul></div>
+        <div class="shop"><div class="stl">Compras em Osaka</div><ul class="ul">
+          <li><strong>Shinsaibashi</strong> — rua coberta de 600 m</li>
+          <li><strong>Don Quijote Shinsaibashi</strong> — KitKat, cosméticos, aberto 24h</li>
+        </ul></div>
+        <div class="hb"><div class="hl">🏨 Hotel Confirmado — Osaka ✅</div>
+          <div class="hn">Ostay Namba South</div>
+          <div class="hs">📍 Região de Namba · perto de Dotonbori e do Kuromon Market<br>🧳 <strong style="color:var(--green)">Já confirmaram: podem deixar as malas no hotel</strong> — útil no dia do check-out, antes de seguir para o Monte Fuji</div>
+        </div>
+        <div class="tip"><div class="tl2">🍽️ O Que Comer</div><div class="sub" style="font-size:.74rem">Kuromon: wagyu ¥800+ · Okonomiyaki na chapa · Takoyaki no Dotonbori ¥600 <span class="yval">(~R$19,20)</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 08 UNIVERSAL ══ -->
+<div class="slide" id="sd08">
+  <div class="pad">
+    <div class="stag">08 de junho · Segunda-feira · Osaka · Dia 2</div>
+    <div class="dh"><div class="dd">Osaka · Dia 2</div><div class="dt">🎢 Universal Studios Japan — Dia Inteiro</div><div class="dm"><span class="badge br">Intenso</span><span class="badge bb">Dormir em Osaka</span></div></div>
+    <div class="wx">🌡️ 28°C · 🌧️ Chuva · ☔ 65% — Poncho ¥800 <span class="yval">(~R$25,60)</span></div>
+    <div class="g2" style="gap:14px;">
+      <div>
+        <ul class="tl">
+          <li><div class="t">07:00</div><div class="ic">🚂</div><div class="tx"><span class="obrig">⏰ CHEGUE 1 HORA ANTES DA ABERTURA</span><br>JR Yumesaki Line até Universal City (~5 min de Osaka Station). Estar no portão 1h antes é o que garante o primeiro acesso ao Nintendo World e às atrações mais disputadas. ✅ Ingressos USJ já pagos.</div></li>
+          <li><div class="t">Abertura</div><div class="ic">🍄</div><div class="tx"><span class="obrig">⭐ COMECE PELO SUPER NINTENDO WORLD</span><br>É a área que esgota primeiro. Com o Express Pass que inclui <strong>Area Timed Entry garantido</strong>, vocês entram na hora marcada sem depender de sorteio. Sem Express, abra o app USJ assim que cruzar a catraca e pegue o Timed Entry imediatamente. Mario Kart + Yoshi's Adventure. Power-Up Band ¥3.500 <span class="yval">(~R$112)</span> — as crianças coletam moedas batendo nos blocos.</div></li>
+          <li><div class="t">10:30</div><div class="ic">🪄</div><div class="tx"><span class="obrig">⭐ HARRY POTTER WORLD — PARADA OBRIGATÓRIA</span><br>Depois do Mario, siga para Hogwarts. Butterbeer quente ¥800 <span class="yval">(~R$25,60)</span> — exclusivo do Japão.</div></li>
+          <li><div class="t">11:00</div><div class="ic">🦕</div><div class="tx">Jurassic Park · Minion Park · Spy × Family (exclusivo do Japão).</div></li>
+          <li><div class="t">12:30</div><div class="ic">🍽️</div><div class="tx">Almoço: Olive Kitchen (Nintendo World) ¥1.800 <span class="yval">(~R$57,60)</span> — reserve no app!</div></li>
+          <li><div class="t">18:30</div><div class="ic">🌟</div><div class="tx">Shows noturnos · Iluminação especial.</div></li>
+        </ul>
+      </div>
+      <div>
+        <div class="concierge"><div class="ctl">🔑 Concierge — O Que Ninguém Conta</div><div class="sub" style="font-size:.74rem">O Super Nintendo World exige um <strong>Area Timed Entry</strong> — uma senha de horário para entrar na área. Em dias cheios, o sorteio gratuito pelo app esgota cedo, às vezes antes das 10h30.<br><br><strong>Sim, precisa "agendar o Mario".</strong> Se o Express de vocês incluir o Timed Entry, o horário já vem garantido — não dependem de sorteio. Se não incluir, abra o app USJ no segundo em que cruzarem a catraca e pegue o Timed Entry antes de qualquer outra coisa.</div></div>
+        <div class="mem"><div class="mtl">💜 Memória Para Sempre</div><div class="sub" style="font-size:.74rem">Super Nintendo World: entrar pelo cano verde e aparecer dentro do universo do Mario. Para crianças de 6 anos, é entrar literalmente no videogame. A Power-Up Band vibra no pulso quando coletam moedas.</div></div>
+        <div class="prem"><div class="ptl">🎟️ Express Pass — Qual Comprar Para o Perfil de Vocês</div><div class="sub" style="font-size:.74rem">
+          Vocês têm <strong>1 dia só</strong>, com crianças e idosos, em ano de 25º aniversário (parque lotado). Nesse cenário, o Express deixa de ser luxo e vira ferramenta de tempo.<br><br>
+          <strong style="color:var(--text)">🥇 Recomendado: Express Pass 7.</strong> É a escolha mais equilibrada para famílias de 1 dia — fura fila em 7 atrações <strong>e inclui o Area Timed Entry garantido</strong> do Super Nintendo World, eliminando o sorteio. ~¥10.800+ <span class="yval">(~R$345+)</span>/pessoa, varia por data.<br><br>
+          <strong style="color:var(--text)">Express Pass 4</strong> (~¥7.800+ <span class="yval">~R$250+</span>): mais barato, fura 4 atrações. Só vale se aceitarem fazer menos e confiar no Timed Entry. <strong>Confirme que a versão escolhida inclui o Nintendo World.</strong><br><br>
+          <strong style="color:var(--red)">⚠️ Todos do grupo precisam ter o mesmo Express</strong> para furar fila juntos — e ele <strong>esgota</strong> nas datas de pico. Compre junto com a data definida.
+        </div></div>
+        <div class="extra"><div class="etl">🎯 Quantas Áreas Priorizar (1 dia)</div><div class="sub" style="font-size:.74rem">
+          Com 1 dia e o perfil de vocês, o ideal é <strong>focar em 2 áreas a fundo</strong>, não correr atrás de tudo:<br><br>
+          <strong style="color:var(--text)">1ª (logo na abertura):</strong> Super Nintendo World — Mario Kart e Yoshi's Adventure.<br>
+          <strong style="color:var(--text)">2ª:</strong> Wizarding World of Harry Potter — o castelo e o Butterbeer.<br><br>
+          As demais (Minion Park, Jurassic Park, Spy×Family) entram <em>se sobrar tempo e energia</em>, sem pressão. Duas áreas vividas com calma valem mais que cinco corridas.
+        </div></div>
+        <div class="only"><div class="otl">Exclusivos do USJ Japão</div><ul class="ul">
+          <li><strong>Butterbeer quente</strong> — só aqui no mundo</li>
+          <li><strong>Spy × Family</strong> — atração baseada no anime japonês</li>
+        </ul></div>
+        <div class="tip"><div class="tl2">🍽️ Crianças — Não Percam</div><div class="sub" style="font-size:.74rem">Butterbeer quente · Churros do HP · Mochi sorvete · Onigiri temático do Mario</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 09 QUIOTO ══ -->
+<div class="slide" id="sd09">
+  <div class="pad">
+    <div class="stag">09 de junho · Terça-feira · Quioto · Day Trip</div>
+    <div class="dh"><div class="dd">Osaka · Dia 3</div><div class="dt">⛩️ Quioto — A Capital dos Templos</div><div class="dm"><span class="badge bg">Moderado</span><span class="badge bb">Dormir em Osaka</span></div></div>
+    <div class="wx">🌡️ 26°C · 🌦️ 50% — Fushimi na neblina é cinematográfico!</div>
+    <div class="g2" style="gap:14px;">
+      <div>
+        <ul class="tl">
+          <li><div class="t">08:00</div><div class="ic">🚂</div><div class="tx">JR Osaka → Kyoto: 15–20 min · ¥570 <span class="yval">(~R$18,24)</span>/pax</div></li>
+          <li><div class="t">08:45</div><div class="ic">🎋</div><div class="tx"><strong>Arashiyama Bamboo:</strong> chegue às 09h. O som do bambu no vento não existe em foto.</div></li>
+          <li><div class="t">10:30</div><div class="ic">🔴</div><div class="tx"><span class="obrig">⭐ FUSHIMI INARI TAISHA — PARADA OBRIGATÓRIA</span><br>10.000 torii desde 711 d.C. Suba 30–40 min. Na 2ª estação: silêncio, torii esparsos, Quioto inteira lá embaixo. No entorno: artesanato, inari sushi ¥300 <span class="yval">(~R$9,60)</span> e amuletos kitsune.</div></li>
+          <li><div class="t">12:30</div><div class="ic">🥢</div><div class="tx"><span class="obrig">⭐ NISHIKI MARKET — PARADA OBRIGATÓRIA</span><br>130 lojas em rua coberta de 400 m. Tsukemono, tofu frito, polvo num palito ¥500 <span class="yval">(~R$16)</span>. Tudo para comer caminhando.</div></li>
+          <li><div class="t">14:00</div><div class="ic">💧</div><div class="tx"><strong>Kiyomizu-dera</strong> — construído sem um único prego. Beba nos 3 canais sagrados. Vista panorâmica.</div></li>
+          <li><div class="t">16:30</div><div class="ic">🏘️</div><div class="tx"><strong>Higashiyama</strong> — ruas de pedra de 400 anos. Cerâmica, leques e lacas.</div></li>
+          <li><div class="t">18:00</div><div class="ic">🌃</div><div class="tx"><strong>Gion ao anoitecer</strong> — bairro das gueixas. Não fotografe.</div></li>
+          <li><div class="t">20:00</div><div class="ic">🍽️</div><div class="tx"><span class="obrig">⭐ KYOTO STATION — UM MUNDO À PARTE</span><br>16 andares de gastronomia. Dezenas de restaurantes. Coma bem e pegue o trem de volta (~20 min).</div></li>
+        </ul>
+      </div>
+      <div>
+        <div class="concierge"><div class="ctl">🔑 Concierge — O Que Ninguém Conta</div><div class="sub" style="font-size:.74rem">Em Fushimi Inari, suba além da 2ª estação — onde 90% dos turistas param. O trecho seguinte tem torii do século VIII, sem ninguém, e bancas de chá com tigelas de 300 anos. Paga-se ¥500 <span class="yval">(~R$16)</span>, ela faz uma reverência. Esse momento não está em nenhum guia.</div></div>
+        <div class="mem"><div class="mtl">💜 Memória Para Sempre</div><div class="sub" style="font-size:.74rem">Fushimi Inari na 3ª estação — 40 min de subida, sozinhos no silêncio com a cidade lá abaixo. E o chá da senhora entre os torii, sem luz elétrica.</div></div>
+        <div class="prem"><div class="ptl">Experiência Premium</div><div class="sub" style="font-size:.74rem">Cerimônia do Chá em Gion ~¥3.000 <span class="yval">(~R$96)</span>/pax — tatami, matcha, 500 anos de tradição. Reserve em <em>Camellia Tea Experience</em>.</div></div>
+        <div class="shop"><div class="stl">Compras em Quioto</div><ul class="ul">
+          <li><strong>Nishiki Market</strong> — tsukemono, yuzu e artesanato</li>
+          <li><strong>Higashiyama</strong> — cerâmica Kiyomizu-yaki centenária</li>
+        </ul></div>
+        <div class="prem" style="margin-top:8px;"><div class="ptl">🍽️ Restaurantes Locais — Bem Avaliados</div><ul class="ul" style="font-size:.72rem">
+          <li><strong>Kyoaji (京味)</strong> — kaiseki tradicional, chef Masayoshi Nose. Tabelog 4.5+. Reserva obrigatória com meses de antecedência. Gion.</li>
+          <li><strong>Omen Okazaki (おめん)</strong> — udon artesanal desde 1967, ambiente de casa japonesa. Tabelog 3.8. Fila, mas vale.</li>
+          <li><strong>Nishiki Warai (錦わらい)</strong> — okonomiyaki local, dentro do próprio Nishiki Market. Tabelog 3.6. Turistas não conhecem.</li>
+          <li><strong>Izuju (いづ重)</strong> — sushi de Kyoto (oshizushi, estilo prensado), fundado em 1781. Tabelog 3.9. Sem cardápio em inglês. Aponte para a vitrine.</li>
+          <li><strong>Honke Owariya (本家尾張屋)</strong> — soba desde 1465. O restaurante mais antigo de Kyoto ainda em funcionamento. Tabelog 3.8. Fila na hora do almoço.</li>
+          <li><strong>Biotei (びおてい)</strong> — almoço vegetariano japonês, ingredientes locais, ¥1.200 <span class="yval">(~R$38)</span>. Sem turista. Fila de japonesas na calçada.</li>
+        </ul></div>
+        <div class="tip"><div class="tl2">🍽️ O Que Comer</div><div class="sub" style="font-size:.74rem">Inari sushi em Fushimi · Nishiki Market · Matcha gelado em Gion · Kyoto Station</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 10 FUJI ══ -->
+<div class="slide" id="sd10">
+  <div class="pad">
+    <div class="stag">10 de junho · Quarta-feira · Fujikawaguchiko · Dia 1</div>
+    <div class="dh"><div class="dd">Monte Fuji · Dia 1</div><div class="dt">♨️ Chegada ao Kawaguchiko Hotel — Lago & Onsen</div><div class="dm"><span class="badge bgr">Leve</span><span class="badge bb">1 noite · Kawaguchiko Hotel</span></div></div>
+    <div class="wx">🌡️ 21°C · ☁️ Neblina · ☔ 45%</div>
+    <div class="g2" style="gap:14px;">
+      <div>
+        <ul class="tl">
+          <li><div class="t">08:00</div><div class="ic">🎒</div><div class="tx">Check-out de Osaka (Ostay Namba South). Compre o ekiben na estação!</div></li>
+          <li><div class="t">09:00</div><div class="ic">🚄</div><div class="tx"><strong>Kyoto → Kawaguchiko</strong> (sem ligação direta). Rota recomendada: Shinkansen Kyoto → Mishima, depois ônibus expresso Mishima → Kawaguchiko (~1h30). Chegada prevista ~13h. <em>Veja o quadro de transporte ao lado.</em></div></li>
+          <li><div class="t">13:30</div><div class="ic">🏨</div><div class="tx">Check-in no <strong>Kawaguchiko Hotel</strong> — de frente para o Lago Kawaguchi. Largue as malas e respire: o Monte Fuji está do outro lado da água.</div></li>
+          <li><div class="t">14:30</div><div class="ic">🌸</div><div class="tx"><strong>Passeio à beira do lago.</strong> Se o céu estiver limpo nesta tarde: vá já ao <strong>Oishi Park</strong> e faça a foto do Lawson — garante a imagem mesmo que amanhã amanheça fechado. Se estiver nublado: reserve para amanhã cedo, que tende a ser mais claro.</div></li>
+          <li><div class="t">17:30</div><div class="ic">♨️</div><div class="tx">Onsen do hotel. Banhe-se antes de entrar. Silêncio. Máx. 20 min. Água a 41°C.</div></li>
+          <li><div class="t">19:30</div><div class="ic">🍽️</div><div class="tx"><strong>Jantar no hotel</strong> — o restaurante do Kawaguchiko Hotel serve pratos de inspiração ocidental com vista. <em>Confirme na reserva</em> se o plano inclui meia-pensão (jantar + café).</div></li>
+          <li><div class="t">22:00</div><div class="ic">🌙</div><div class="tx"><em>Opcional:</em> onsen noturno — a essa hora o banho coletivo costuma estar vazio.</div></li>
+        </ul>
+        <div class="tip"><div class="tl2">🏔️ O Fuji Está Visível Hoje?</div><div class="sub" style="font-size:.74rem">Verifique em: <strong style="color:var(--blue)">fujisan.biz/weather</strong> — câmera ao vivo + previsão de visibilidade por hora.</div></div>
+      </div>
+      <div>
+        <div class="concierge"><div class="ctl">🔑 Concierge — O Que Ninguém Conta</div><div class="sub" style="font-size:.74rem">O Kawaguchiko Hotel tem dois trunfos que poucos exploram: o <strong>banho noturno após as 21h</strong> — os onsen ficam praticamente vazios, só vapor e o silêncio do lago. E o fato de ficar <strong>de frente para a água</strong>: o melhor amanhecer da viagem está a poucos passos da recepção, sem precisar pegar transporte.<br><br>Peça na recepção para serem avisados cedo (5h30–6h) se o Monte Fuji estiver visível.</div></div>
+        <div class="mem"><div class="mtl">💜 Memória Para Sempre</div><div class="sub" style="font-size:.74rem">A janela aberta para o lago, o Fuji do outro lado da água, o vapor do onsen subindo no fim da tarde. Esse silêncio à beira do Lago Kawaguchi é uma das imagens que vocês vão guardar para sempre.</div></div>
+        <div class="hb"><div class="hl">🏨 Hotel Confirmado — Monte Fuji ✅</div>
+          <div class="hn">Kawaguchiko Hotel</div>
+          <div class="hs">📍 Funatsu 200, Fujikawaguchiko · Yamanashi<br>🗻 De frente para o Lago Kawaguchi · vista do Fuji<br>♨️ Onsen termal + banho público<br>🚶 ~15 min a pé da estação Kawaguchiko</div>
+          <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:.72rem;color:var(--muted)">
+            🏡 <strong style="color:var(--text)">Chalé estilo japonês:</strong> Sei, Mary, Hell, Mari e Helena<br>
+            🛏️ <strong style="color:var(--text)">Quarto separado:</strong> Diogo, Kellyn e Ian
+          </div>
+        </div>
+        <div class="extra"><div class="etl">📍 No Hotel & Arredores</div><div class="sub" style="font-size:.74rem">
+          <strong style="color:var(--text)">No próprio hotel:</strong> onsen com vista do Fuji ao anoitecer, terraço à beira do lago para o pôr do sol, e o banho noturno vazio.<br><br>
+          <strong style="color:var(--text)">A pé / pertinho:</strong> orla do Lago Kawaguchi para caminhada e foto; embarque do <strong>Kachi-Kachi Ropeway</strong> (teleférico com mirante do Fuji) a poucos minutos; lojinhas e cafés da beira do lago.<br><br>
+          <strong style="color:var(--text)">De carro/ônibus curto:</strong> <strong>Oishi Park</strong> (melhor ângulo do Fuji + lavanda em junho) e <strong>Chureito Pagoda</strong> — ambos no roteiro de amanhã cedo.
+        </div></div>
+        <div class="tip"><div class="tl2">🍽️ O Que Comer</div><div class="sub" style="font-size:.74rem">Ekiben comprado na estação · Hoto (macarrão com abóbora e miso) ¥1.200 <span class="yval">(~R$38,40)</span> · Truta de Oshino Hakkai · Jantar no hotel</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 11 FUJI → TÓQUIO ══ -->
+<div class="slide" id="sd11">
+  <div class="pad">
+    <div class="stag">11 de junho · Quinta-feira · Monte Fuji → Tóquio (Asakusa)</div>
+    <div class="dh"><div class="dd">Monte Fuji · Dia 2</div><div class="dt">🏔️ Pagoda + Kawaguchiko → 🚆 Limited Express → Asakusa</div><div class="dm"><span class="badge bg">Moderado</span></div></div>
+    <div class="wx">🌡️ 22°C · 🌦️ Melhora · ☔ 35%</div>
+    <div class="g2" style="gap:14px;">
+      <div>
+        <ul class="tl">
+          <li><div class="t">06:00</div><div class="ic">📸</div><div class="tx"><strong>Amanhecer com o Monte Fuji</strong> — beira do lago. Luz dourada e névoa.</div></li>
+          <li><div class="t">07:30</div><div class="ic">🍵</div><div class="tx"><strong>Café da manhã no hotel</strong>, à beira do lago. Aproveite a vista antes de o dia esquentar.</div></li>
+          <li><div class="t">09:00</div><div class="ic">🛍️</div><div class="tx">Compras: mini-Fujis, lavanda e doces regionais nas lojas do entorno.</div></li>
+          <li><div class="t">10:00</div><div class="ic">⛩️</div><div class="tx"><span class="obrig">⭐ CHUREITO PAGODA — PARADA OBRIGATÓRIA</span><br><strong>398 degraus</strong> de escadaria — cansativo, mas o visual é transformador. Leve água, suba devagar. Vista: Monte Fuji + pagoda vermelha + vale de Fujiyoshida.</div></li>
+          <li><div class="t">12:00</div><div class="ic">🌸</div><div class="tx"><span class="obrig">⭐ KAWAGUCHIKO + OISHI PARK — PARADA OBRIGATÓRIA</span><br>Melhor ângulo do Monte Fuji. Lavanda em junho. A foto com o Lawson fica a 10 min a pé.</div></li>
+          <li><div class="t">13:30</div><div class="ic">🍱</div><div class="tx">Almoço: Hoto (macarrão com abóbora) ¥1.200 <span class="yval">(~R$38,40)</span> — prato típico da região.</div></li>
+          <li><div class="t">15:30</div><div class="ic">🎒</div><div class="tx">Check-out. Deslocamento até a estação Kawaguchiko.</div></li>
+          <li><div class="t">16:25</div><div class="ic">🚆</div><div class="tx"><strong>Limited Express "Fuji Excursion"</strong> Kawaguchiko → Shinjuku, direto, ~1h55 · <strong>¥4.200</strong> <span class="yval">(~R$134)</span>/adulto · criança ~metade. <strong>Assento reservado obrigatório.</strong> Sente no <strong>lado direito</strong>: o Fuji aparece pela janela logo após a partida.</div></li>
+          <li><div class="t">18:30</div><div class="ic">🚇</div><div class="tx">De Shinjuku até <strong>Asakusa</strong> (~30 min de metrô). Trajeto e custo no quadro ao lado.</div></li>
+          <li><div class="t">19:30</div><div class="ic">🏨</div><div class="tx">Check-in no <strong>APA Hotel Asakusa Shin-Okachimachi Ekimae</strong>. 6 noites em Tóquio começam aqui.</div></li>
+          <li><div class="t">21:00</div><div class="ic">🍜</div><div class="tx"><strong>Ramen Ichiran</strong> — cabines individuais, pedido por formulário. ¥1.000 <span class="yval">(~R$32)</span></div></li>
+        </ul>
+      </div>
+      <div>
+        <div class="concierge"><div class="ctl">🔑 Concierge — Como Voltar Para Tóquio</div><div class="sub" style="font-size:.74rem">
+          <strong style="color:var(--text)">Não existe shinkansen para Kawaguchiko.</strong> O trem que liga Kawaguchiko a Tóquio é o <strong>Limited Express "Fuji Excursion"</strong>, operado em conjunto pela JR East e pela Fujikyu Railway — direto até Shinjuku, sem trocar de trem. São poucas saídas por dia, com assento reservado obrigatório.<br><br>
+          <strong style="color:var(--text)">Reserve o assento com antecedência.</strong> À tarde, as saídas de Kawaguchiko costumam ficar por volta de <strong>15h, 16h25 e 16h50</strong> (confirme na véspera no site da JR East ou da Fujikyu — a tabela muda por temporada).<br><br>
+          <strong style="color:var(--text)">A vista do Fuji:</strong> sente no lado direito. A montanha acompanha a janela nos primeiros minutos após a partida. Última despedida — câmera pronta.
+        </div></div>
+        <div class="extra"><div class="etl">🚆 As 3 Formas de Voltar Para Tóquio</div><div class="sub" style="font-size:.74rem">
+          <strong style="color:var(--text)">1. Limited Express "Fuji Excursion"</strong> — direto, ~1h55. <strong>¥4.200</strong> <span class="yval">(~R$134)</span>/adulto. Mais confortável, assento garantido. <em>Recomendado para o grupo com crianças e idosos.</em><br><br>
+          <strong style="color:var(--text)">2. Ônibus expresso (Fujikyu/Keio)</strong> — direto até Busta Shinjuku, ~1h45–2h. <strong>¥2.000–2.200</strong> <span class="yval">(~R$64–70)</span>/adulto. Mais barato, mas depende do trânsito e <strong>esgota rápido</strong>.<br><br>
+          <strong style="color:var(--text)">3. Trem local com baldeação</strong> — Fujikyu até Otsuki + JR Chuo até Shinjuku, ~3h, 1 troca. <strong>~¥2.580</strong> <span class="yval">(~R$83)</span>.<br><br>
+          <strong style="color:var(--red)">⚠️ JR Pass não cobre a Fujikyu Railway:</strong> no Fuji Excursion vale só de Otsuki a Shinjuku; o trecho Otsuki–Kawaguchiko é pago à parte.
+        </div></div>
+        <div class="alert" style="margin-top:8px;"><div class="atl">☁️ Plano B — Se Amanhecer Fechado</div><div class="sub" style="font-size:.74rem">
+          <strong>Cenário:</strong> o dia 11 amanhece com névoa total, zero visibilidade.<br><br>
+          ✅ A <strong>Chureito Pagoda</strong> vale a subida mesmo sem o Fuji — a pagoda vermelha com o vale abaixo já é belíssima e muito fotografada mesmo sem a montanha ao fundo.<br><br>
+          ✅ Se o dia 10 (chegada) tiver céu limpo no fim da tarde — vá ao <strong>Oishi Park e foto do Lawson ainda no dia 10</strong>, assim garante a imagem mesmo com névoa no dia 11.<br><br>
+          ✅ <strong>fujisan.biz/weather</strong> tem câmera ao vivo — verifique na noite anterior às 21h. Se mostrar topo limpo, acorde às 5h30 e saia cedo no dia 11.
+        </div></div>
+        <div class="mem"><div class="mtl">💜 Memória Para Sempre</div><div class="sub" style="font-size:.74rem">398 degraus de manhã cedo, névoa baixa, luz dourada. Depois o Fuji Excursion saindo de Kawaguchiko com a montanha pela janela. E à noite, já em Asakusa: Ramen Ichiran em silêncio. Um dia que começa com montanha sagrada e termina no bairro mais tradicional de Tóquio.</div></div>
+        <div class="hb"><div class="hl">🏨 Hotel Confirmado — Tóquio ✅</div>
+          <div class="hn">APA Hotel Asakusa Shin-Okachimachi Ekimae</div>
+          <div class="hs">📍 Motoasakusa 1-6-11, Taito-ku · coração de Asakusa<br>🚇 Próximo à estação Shin-Okachimachi (linhas Oedo e Tsukuba Express)<br>⛩️ A poucos minutos do Senso-ji e da Kappabashi<br>✈️ Keisei Access Express direto para Narita</div>
+        </div>
+        <div class="tip"><div class="tl2">🍽️ O Que Comer</div><div class="sub" style="font-size:.74rem">Café no hotel · Hoto macarrão ¥1.200 <span class="yval">(~R$38,40)</span> · Ramen Ichiran ~¥1.000 <span class="yval">(~R$32)</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 12 ASAKUSA ══ -->
+<div class="slide" id="sd12">
+  <div class="pad">
+    <div class="stag">12 de junho · Sexta-feira · Tóquio · Dia 1</div>
+    <div class="dh"><div class="dd">Tóquio · Dia 1</div><div class="dt">⛩️ Asakusa + Akihabara + Shibuya Sky · 🌊 DisneySea (parte da família)</div><div class="dm"><span class="badge bg">Moderado</span><span class="badge bpu">Família se divide</span><span class="badge bgr">✅ Reserve o Shibuya Sky!</span></div></div>
+    <div class="wx">🌡️ 25°C · 🌧️ ☔ 60% de manhã</div>
+    <div class="g2" style="gap:14px;">
+      <div>
+        <div class="divgroup">🔀 <strong>Família se divide:</strong> parte vai à DisneySea (JR → Maihama) · parte faz Asakusa → Akihabara · Grupo 1 se encontra no <strong>Shibuya Sky às 17h</strong> (Mãe, Mary, Ké e Diogo)</div>
+        <ul class="tl">
+          <li><div class="t">07:30</div><div class="ic">🚂</div><div class="tx"><strong>Saída juntos do hotel</strong> pela JR Keiyo. Quem vai à DisneySea desce em <strong>Maihama</strong>. O restante da família segue até Asakusa.</div></li>
+          <li><div class="t">08:00</div><div class="ic">⛩️</div><div class="tx"><span class="obrig">⭐ SENSO-JI (ASAKUSA) — PARADA OBRIGATÓRIA</span><br>Chegue antes das 09h. Templo de 645 d.C., mercado de rua coberto. Coma <strong>mochi de morango</strong> e <strong>melon pan</strong>. Tire o omikuji ¥200 <span class="yval">(~R$6,40)</span>.</div></li>
+          <li><div class="t">09:30</div><div class="ic">🗼</div><div class="tx"><strong>Skytree:</strong> imponente por fora. Não vale subir. Na base: udon que você mesmo monta ¥900 <span class="yval">(~R$28,80)</span>.</div></li>
+          <li><div class="t">11:00</div><div class="ic">🎮</div><div class="tx"><span class="obrig">⭐ AKIHABARA — PARADA OBRIGATÓRIA</span><br>Yodobashi Akiba — 8 andares. Pokémon cards JP, action figures. Claw machines para as crianças.</div></li>
+          <li><div class="t">13:00</div><div class="ic">🍱</div><div class="tx">Almoço: Maid Café Akihabara ~¥2.000 <span class="yval">(~R$64)</span></div></li>
+          <li><div class="t">15:00</div><div class="ic">🐕</div><div class="tx"><strong>Hachiko</strong> — estátua do cão fiel. Foto obrigatória.</div></li>
+          <li><div class="t">15:30</div><div class="ic">🚦</div><div class="tx"><span class="obrig">⭐ SHIBUYA CROSSING — PARADA OBRIGATÓRIA</span><br>2.500 pessoas ao mesmo sinal. Depois suba num café para ver de cima.</div></li>
+          <li><div class="t">17:00</div><div class="ic">🌇</div><div class="tx"><span class="obrig">⭐ SHIBUYA SKY — GRUPO 1 · 12/06 · 17h ou 18h</span><br><strong>Mãe, Mary, Ké e Diogo.</strong> Mirante 360° a 229 m, ao ar livre. Ingresso adulto ~¥3.400 <span class="yval">(~R$109)</span> (oficial: ¥3.700 após 15h). Crianças e estudantes pagam menos; menores de 3 anos não pagam. <strong>Agende a partir do dia 29</strong> (abre ~1 mês antes), horário 17h ou 18h.</div></li>
+          <li><div class="t">19:30</div><div class="ic">🍣</div><div class="tx"><strong>Jantar reunidos:</strong> Genki Sushi — esteira com tablet. ¥800 <span class="yval">(~R$25,60)</span>/pessoa</div></li>
+        </ul>
+      </div>
+      <div>
+        <div class="card" style="border-top:3px solid var(--blue);margin-bottom:10px">
+          <div style="font-weight:700;margin-bottom:6px;font-size:.82rem">🌊 DisneySea — Parte da Família (dia 12)</div>
+          <div class="sub" style="font-size:.73rem;margin-bottom:7px">JR Keiyo do hotel → Maihama. Chegue às 08h. Sexta = filas menores.</div>
+          <ul class="ul" style="font-size:.72rem">
+            <li><strong>Journey to the Center of the Earth</strong> — mais radical do parque, fila logo na abertura</li>
+            <li><strong>Indiana Jones Adventure</strong> — clássico imperdível</li>
+            <li><strong>Soaring: Fantastic Flight</strong> — voo panorâmico imersivo</li>
+            <li><strong>Fortress Explorations</strong> — exploração temática única</li>
+            <li><strong>20.000 Léguas</strong> — submersível retro, só aqui</li>
+          </ul>
+          <div style="margin-top:8px;font-size:.7rem;color:var(--gold)">⏱️ Às 16h30: sair de Maihama → Shibuya ~40 min. Encontro com o Grupo 1 no Shibuya Sky às 17h!</div>
+        </div>
+        <div class="concierge"><div class="ctl">🔑 Concierge — DisneySea</div><div class="sub" style="font-size:.74rem">DisneySea na sexta tem filas 20–40 min nas radicais se chegar às 08h. <em>Journey to the Center of the Earth</em> esgota o Premier Access rapidamente — compre no app assim que entrar.<br><br>O parque tem canais venezianos e tema árabe. Muitos japoneses preferem a DisneySea ao Disneyland por ser mais adulta e elaborada.</div></div>
+        <div class="mem"><div class="mtl">💜 Memória Para Sempre</div><div class="sub" style="font-size:.74rem">Shibuya Sky ao pôr do sol: sem teto, sem vidro, vento no rosto e Tóquio inteira se acendendo. Mãe, Mary, Ké e Diogo no mesmo mirante ao entardecer — uma das imagens mais bonitas da viagem.</div></div>
+        <div class="tip"><div class="tl2">🍽️ O Que Comer</div><div class="sub" style="font-size:.74rem">Mochi de morango + Melon pan em Asakusa · Maid Café · Genki Sushi à noite</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 13 KISARAZU ══ -->
+<div class="slide" id="sd13">
+  <div class="pad">
+    <div class="stag">13 de junho · Sábado · Tóquio · Dia 2</div>
+    <div class="dh"><div class="dd">Tóquio · Dia 2</div><div class="dt">🛍️ Mitsui Outlet Kisarazu + 🌸 KidZania (opção kids)</div><div class="dm"><span class="badge bgr">Leve</span><span class="badge bg">330 lojas · Maior outlet do Japão</span></div></div>
+    <div class="wx">🌡️ 26°C · ☁️ · ☔ 35%</div>
+    <div class="g2" style="gap:14px;">
+      <div>
+        <ul class="tl">
+          <li><div class="t">08:30</div><div class="ic">🚌</div><div class="tx">Ônibus direto de Tokyo Station ou Shinjuku → Kisarazu ~50 min · ¥1.300 <span class="yval">(~R$41,60)</span>. Reserve no Klook ou site oficial!</div></li>
+          <li><div class="t">10:00</div><div class="ic">🛍️</div><div class="tx"><span class="obrig">⭐ MITSUI OUTLET PARK KISARAZU — PARADA OBRIGATÓRIA</span><br>O maior outlet do Japão — 330 lojas. Armani, Coach, Nike, Saint Laurent, Asics, Beams, Loewe, Pokémon Outlet, Disney Store. Descontos de 30 a 60%, até 80% nas promoções.</div></li>
+          <li><div class="t">12:30</div><div class="ic">🍱</div><div class="tx">Almoço na praça de alimentação do outlet.</div></li>
+          <li><div class="t">14:00</div><div class="ic">🎮</div><div class="tx"><strong>Pokémon Outlet Store:</strong> pelúcias e merchandise com desconto. Itens exclusivos que não existem em loja regular — imperdível para as crianças.</div></li>
+          <li><div class="t">16:30</div><div class="ic">🚌</div><div class="tx">Ônibus de volta para Tokyo Station / Shinjuku ~50 min.</div></li>
+          <li><div class="t">19:30</div><div class="ic">🍢</div><div class="tx"><span class="obrig">⭐ OMOIDE YOKOCHO — PARADA OBRIGATÓRIA</span><br>Rua estreita e famosa, enfeitada com lanternas japonesas. Yakitori na brasa num beco de 1945. Fumaça, chope e atmosfera de décadas atrás. A 5 min a pé da estação de Shinjuku. ~¥2.000 <span class="yval">(~R$64)</span>/pessoa</div></li>
+          <li><div class="t">21:00</div><div class="ic">🌃</div><div class="tx"><em>Se sobrar energia:</em> Kabukicho — bairro de neon de Shinjuku. Passagem rápida e gratuita.</div></li>
+        </ul>
+      </div>
+      <div>
+        <div class="concierge"><div class="ctl">🔑 Concierge — O Que Ninguém Conta</div><div class="sub" style="font-size:.74rem">Kisarazu tem a <strong>única loja outlet de Loewe</strong> perto de Tóquio (a outra é em Gotemba). Descontos chegam a 40% em peças de coleção anterior.<br><br>A Pokémon Outlet Store vende merchandise de outlet — plushies com defeito mínimo de fábrica que não são vendidos em lojas regulares. Para crianças de 6 anos, é descobrir o Pikachu a preço de custo.<br><br>Tax Refund: acima de ¥5.000 <span class="yval">(~R$160)</span> por loja, vá ao balcão central com o passaporte. Reembolso em dinheiro na hora.</div></div>
+        <div class="mem"><div class="mtl">💜 Memória Para Sempre</div><div class="sub" style="font-size:.74rem">Crianças na Pokémon Outlet escolhendo o Pikachu favorito. E depois, a transição perfeita: sair do maior outlet do Japão e entrar no beco de 1945 do Omoide Yokocho com yakitori na brasa. Dois mundos no mesmo dia.</div></div>
+        <div class="kids"><div class="ktl">🌸 Kids Guide — KidZania Tokyo (alternativa do dia)</div><div class="sub" style="font-size:.74rem">
+          Se o casal de 6 anos preferir uma experiência só deles, a <strong>KidZania Tokyo</strong> é a melhor opção infantil de Tóquio — vale a pena uma parte da família trocar o outlet por aqui.<br><br>
+          🏙️ Mini cidade em escala 2/3 onde crianças de 3 a 15 anos vivem <strong>mais de 100 profissões</strong> com equipamento real: piloto, bombeiro, chef, médico, ator, gerente de banco.<br>
+          🕘 <strong>1ª sessão 9h–15h</strong> (6h) · 2ª sessão 16h–21h.<br>
+          📍 Urban Dock LaLaport Toyosu 1, 3º andar Norte · 2-4-9 Toyosu, Koto-ku.<br>
+          💴 Criança a partir de ¥3.800 <span class="yval">(~R$122)</span> · Adulto a partir de ¥2.300 <span class="yval">(~R$74)</span>.<br><br>
+          <strong style="color:var(--text)">Estratégia para 1 menino + 1 menina de 6 anos:</strong> reserve a 1ª sessão (chegue 30 min antes), comecem juntos por uma profissão "uau" de fila curta (bombeiro ou piloto), depois deixem cada um escolher 2 ou 3 atividades por interesse. A "moeda" KidZo que ganham trabalhando vira a primeira mesada deles — guardem as notinhas de lembrança.
+        </div></div>
+        <div class="shop"><div class="stl">Destaques do Outlet</div><ul class="ul">
+          <li><strong>Asics · Nike · New Balance JP</strong> — edições exclusivas, 40–60% abaixo do Brasil</li>
+          <li><strong>Loewe · Armani · Coach</strong> — marcas de luxo com desconto</li>
+          <li><strong>Pokémon Outlet · Disney Store</strong> — merchandise exclusivo</li>
+          <li><strong>Beams · United Arrows</strong> — moda japonesa premium</li>
+        </ul></div>
+        <div class="tip"><div class="tl2">🍽️ O Que Comer</div><div class="sub" style="font-size:.74rem">Almoço: praça do outlet · Jantar: Yakitori Omoide Yokocho ¥2.000 <span class="yval">(~R$64)</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 14 HARAJUKU ══ -->
+<div class="slide" id="sd14">
+  <div class="pad">
+    <div class="stag">14 de junho · Domingo · Tóquio · Dia 3</div>
+    <div class="dh"><div class="dd">Tóquio · Dia 3</div><div class="dt">🧁 Harajuku + Gyukatsu + Shibuya Sky (Grupo 2)</div><div class="dm"><span class="badge bg">Moderado</span><span class="badge bgr">✅ Shibuya Sky 17h/18h</span></div></div>
+    <div class="wx">🌡️ 26°C · 🌦️ ☔ 45%</div>
+    <div class="g2" style="gap:14px;">
+      <div>
+        <ul class="tl">
+          <li><div class="t">09:00</div><div class="ic">🧁</div><div class="tx"><span class="obrig">⭐ HARAJUKU TAKESHITA STREET — PARADA OBRIGATÓRIA</span><br>Berço da cultura jovem japonesa — harajuku style, kawaii e decora kei. Crêpes coloridos, <strong>loja da Hello Kitty</strong>, roupas e souvenirs únicos.</div></li>
+          <li><div class="t">11:00</div><div class="ic">🌿</div><div class="tx"><strong>Meiji-Jingu</strong> — 70.000 árvores, a 5 min de Harajuku. Silêncio no meio da metrópole.</div></li>
+          <li><div class="t">13:00</div><div class="ic">🍽️</div><div class="tx"><span class="obrig">⭐ GYUKATSU MOTOMURA — PARADA OBRIGATÓRIA</span><br>Wagyu numa pedra quente à mesa. Você controla o ponto! Crianças de 6 anos grelando o próprio pedaço. ¥1.500 <span class="yval">(~R$48)</span></div></li>
+          <li><div class="t">15:00</div><div class="ic">🛍️</div><div class="tx"><strong>Omotesando Hills</strong> — shopping de arquitetura premiada a 5 min de Harajuku. Marcas japonesas premium e cafés de design.</div></li>
+          <li><div class="t">17:00</div><div class="ic">🌇</div><div class="tx"><span class="obrig">⭐ SHIBUYA SKY — GRUPO 2 · 14/06 · 17h ou 18h</span><br><strong>Mari e Hell.</strong> Mirante 360° a 229 m ao pôr do sol. Ingresso adulto ~¥3.400 <span class="yval">(~R$109)</span>. <strong>Agende a partir do dia 29</strong>, horário 17h ou 18h.</div></li>
+          <li><div class="t">18:30</div><div class="ic">🎮</div><div class="tx"><strong>Game Center Sega Shinjuku</strong> — claw machines e arcades. Quem não foi ao Shibuya Sky pode esticar aqui.</div></li>
+          <li><div class="t">20:00</div><div class="ic">🍽️</div><div class="tx">Jantar tranquilo em Shinjuku.</div></li>
+          <li><div class="t">21:00</div><div class="ic">🌃</div><div class="tx"><em>Se sobrar energia:</em> <strong>Godzilla Hotel Gracery</strong> — ruge com fumaça de hora em hora. Gratuito.</div></li>
+        </ul>
+      </div>
+      <div>
+        <div class="concierge"><div class="ctl">🔑 Concierge — O Que Ninguém Conta</div><div class="sub" style="font-size:.74rem">No Gyukatsu Motomura, peça o corte <em>extra fat</em> — é o que os japoneses pedem. A gordura derrete na pedra quente e cria uma crosta que não existe em nenhum churrasco brasileiro.<br><br>Em Harajuku, procure a <em>Kawaii Monster Café</em> — instalação artística com comida surreal: neon, monstros e personagens. Para crianças de 6 anos, o lugar mais estranho e fascinante que já viram. Reserve antes.</div></div>
+        <div class="mem"><div class="mtl">💜 Memória Para Sempre</div><div class="sub" style="font-size:.74rem">Crianças de 6 anos grelando wagyu na pedra quente — independência, curiosidade, sabor. Um almoço contado anos depois.</div></div>
+        <div class="extra"><div class="etl">Se Sobrar Tempo…</div><ul class="ul">
+          <li><strong>Ikebukuro</strong> — bairro de anime e mangá, mais autêntico que Akihabara para compras. 15 min de Shinjuku.</li>
+          <li><strong>DisneySea</strong> — tema árabe-veneziano, mais adulto. Diferente de qualquer outro parque Disney.</li>
+        </ul></div>
+        <div class="shop"><div class="stl">Compras em Harajuku</div><ul class="ul">
+          <li><strong>Takeshita Street</strong> — Hello Kitty, acessórios kawaii, roupas</li>
+          <li><strong>Omotesando Hills</strong> — shopping de arquitetura premiada</li>
+          <li><strong>Don Quijote Shinjuku</strong> — KitKat, cosméticos, 24h</li>
+        </ul></div>
+        <div class="tip"><div class="tl2">🍽️ O Que Comer</div><div class="sub" style="font-size:.74rem">Crêpe Harajuku · Gyukatsu wagyu · Jantar tranquilo em Shinjuku</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 15 DISNEY ══ -->
+<div class="slide" id="sd15">
+  <div class="pad">
+    <div class="stag">15 de junho · Segunda-feira · Tóquio · Dia 4</div>
+    <div class="dh"><div class="dd">Tóquio · Dia 4</div><div class="dt">🏰 Tokyo Disneyland — Dia Completo</div><div class="dm"><span class="badge br">Intenso</span><span class="badge bgr">✅ Reserve com antecedência!</span></div></div>
+    <div class="wx">🌡️ 27°C · 🌧️ Segunda = menos filas! Poncho ¥800 <span class="yval">(~R$25,60)</span></div>
+    <div class="g2" style="gap:14px;">
+      <div>
+        <ul class="tl">
+          <li><div class="t">06:30</div><div class="ic">🚂</div><div class="tx">JR Keiyo Line → Maihama ~30 min · ¥350 <span class="yval">(~R$11,20)</span>. Chegue às 07:30.</div></li>
+          <li><div class="t">08:00–11:00</div><div class="ic">🎢</div><div class="tx"><strong>Atrações por altura:</strong><br>
+            <span style="color:var(--green);font-size:.7rem">✅ 1,02 m+ (6 anos):</span> It's a Small World · Dumbo · Pooh's Hunny Hunt · Buzz Lightyear · Peter Pan<br>
+            <span style="color:var(--gold);font-size:.7rem">✅ 1,17 m+ (adultos):</span> Big Thunder · Pirates of the Caribbean<br>
+            <span style="color:var(--red);font-size:.7rem">🔥 1,20 m+ (radicais):</span> Space Mountain · Splash Mountain · Haunted Mansion<br>
+            <span style="color:var(--blue);font-size:.7rem">⏱️ Horários no app Disney:</span> Shows 10h30 · 14h · 16h30</div></li>
+          <li><div class="t">12:00</div><div class="ic">🍽️</div><div class="tx"><strong>Crystal Palace Buffet ~¥4.000 <span class="yval">(~R$128)</span>/pax:</strong> buffet temático vitoriano, espaçoso, ótimo para idosos e crianças. Reserve no app Disney.<br><strong>Asha's Wishing Food (Fantasyland):</strong> lanches rápidos e temáticos — perfeito para crianças que não querem parar.</div></li>
+          <li><div class="t">15:00</div><div class="ic">🎪</div><div class="tx"><strong>Parade Jubilation!</strong> — desfile ao vivo. Crianças na frente!</div></li>
+          <li><div class="t">19:30</div><div class="ic">🎆</div><div class="tx"><span class="obrig">⭐ ELECTRICAL PARADE DREAMLIGHTS — PARADA OBRIGATÓRIA</span><br>600.000 LEDs, música orquestral e personagens iluminados. Horário no app (~19h30 e ~21h). Com as crianças nos ombros — essa imagem fica para sempre.</div></li>
+        </ul>
+      </div>
+      <div>
+        <div class="concierge"><div class="ctl">🔑 Fura-Fila — Guia Completo Disney Tokyo</div><div class="sub" style="font-size:.74rem">
+          <strong style="color:var(--text)">Sistema atual (2025/26):</strong><br>
+          ✅ <strong>Priority Pass (gratuito):</strong> reserva horário em várias atrações sem pagar — disponível via app após entrar no parque. Esgota ao longo do dia. Priorize logo ao entrar.<br>
+          💳 <strong>Premier Access (pago):</strong> ¥1.500–2.500/atração <span class="yval">(~R$48–80)</span>. Compre pelo app dentro do parque. Uma atração por vez, com intervalo de 1h entre compras.<br><br>
+          <strong style="color:var(--text)">Vale a pena comprar?</strong> <strong style="color:var(--green)">SIM</strong> — com idosos e 2 crianças de 6 anos, economizar 2h de fila vale muito mais que o custo.<br><br>
+          <strong style="color:var(--text)">Quais Premier Access priorizar:</strong><br>
+          🥇 <strong>Enchanted Tale of Beauty and the Beast</strong> — fila de 90–120 min sem Premier Access. É a atração mais procurada. Compre imediatamente ao entrar.<br>
+          🥈 <strong>Pooh's Hunny Hunt</strong> — exclusivo mundial, fila longa. Tente o Priority Pass gratuito primeiro; se não conseguir, compre o Premier Access.<br>
+          🥉 <strong>Space Mountain / Splash Mountain</strong> — para os adultos radicais, se a fila passar de 60 min.<br><br>
+          <strong style="color:var(--text)">Shows — não vale o dinheiro:</strong> os shows têm assentos amplos disponíveis sem Premier Access. Chegue 15 min antes e você entra bem posicionado.<br><br>
+          <strong style="color:var(--text)">Estratégia do dia:</strong><br>
+          1️⃣ Entre no parque às 08h → abra o app imediatamente<br>
+          2️⃣ Compre Premier Access para Beauty and the Beast<br>
+          3️⃣ Pegue Priority Pass gratuito para Pooh's Hunny Hunt<br>
+          4️⃣ Enquanto espera, aproveite It's a Small World e Peter Pan (fila menor cedo)
+        </div></div>
+        <div class="mem"><div class="mtl">💜 Memória Para Sempre</div><div class="sub" style="font-size:.74rem">600.000 LEDs, crianças nos ombros, olhos arregalados na Main Street. Essa cena fica guardada por décadas.</div></div>
+        <div class="kidsb"><div class="ktl">🌸 Kids Guide — Disney com 2 crianças de 6 anos</div><div class="sub" style="font-size:.74rem">
+          🎢 <strong>Atrações que elas podem (1,02 m+):</strong> It's a Small World, Dumbo, Pooh's Hunny Hunt, Buzz Lightyear, Peter Pan — comecem por essas cedo, com fila menor.<br>
+          🍿 <strong>Lanche entre atrações:</strong> Asha's Wishing Food (Fantasyland) para não pararem o ritmo.<br>
+          🎆 <strong>Pico emocional:</strong> garantam a Electrical Parade à noite — é a memória que elas vão guardar. Cheguem 20 min antes para lugar na frente.<br>
+          🧢 <strong>Conforto:</strong> levem poncho (¥800), lanche e um carrinho leve para os avós/cansaço das crianças no fim do dia.
+        </div></div>
+        <div class="extra"><div class="etl">Se Der Tempo — DisneySea</div><div class="sub" style="font-size:.74rem">Tema árabe-veneziano, Journey to the Center of the Earth (radical), Fortress Explorations. Diferente de qualquer outro parque Disney.</div></div>
+        <div class="tip"><div class="tl2">🍽️ Crianças de 6 Anos</div><div class="sub" style="font-size:.74rem">Corn dog Mickey · Churros · Mochi sorvete · Asha's Food · Crystal Palace</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 16 GINZA ══ -->
+<div class="slide" id="sd16">
+  <div class="pad">
+    <div class="stag">16 de junho · Terça-feira · Tóquio · Dia 5</div>
+    <div class="dh"><div class="dd">Tóquio · Dia 5</div><div class="dt">🐟 Tsukiji + 💎 Ginza + 🎨 TeamLab + 🌉 Odaiba</div><div class="dm"><span class="badge bg">Moderado</span><span class="badge bgr">✅ TeamLab já comprado</span></div></div>
+    <div class="wx">🌡️ 26°C · ☁️ · ☔ 30% — Melhor dia da semana!</div>
+    <div class="g2" style="gap:14px;">
+      <div>
+        <ul class="tl">
+          <li><div class="t">08:30</div><div class="ic">🐟</div><div class="tx"><span class="obrig">⭐ TSUKIJI OUTER MARKET — PARADA OBRIGATÓRIA</span><br>Estilo mercado municipal. Tamagoyaki fresquíssimo ¥500 <span class="yval">(~R$16)</span>, frutos do mar na brasa. Compre <strong>facas artesanais e cerâmicas</strong> nas lojas do entorno. Chegue antes das 10h.</div></li>
+          <li><div class="t">10:00</div><div class="ic">💎</div><div class="tx"><span class="obrig">⭐ GINZA — PARADA OBRIGATÓRIA</span><br>A avenida mais luxuosa do Japão. Arquitetura premiada. Tsukiji fica a 10 min a pé daqui.</div></li>
+          <li><div class="t">10:30</div><div class="ic">🏬</div><div class="tx"><strong>Uniqlo Ginza (15 andares)</strong> — o maior do mundo. Coleções exclusivas e colaborações artísticas.<br><strong>GU Ginza</strong> — moda jovem e acessível ao lado.</div></li>
+          <li><div class="t">13:00</div><div class="ic">🍣</div><div class="tx">Almoço: sushi de balcão em Ginza ~¥2.000–3.000 <span class="yval">(~R$64–96)</span> — chef na frente, peixe do dia.</div></li>
+          <li><div class="t">10:00</div><div class="ic">🎨</div><div class="tx"><span class="obrig">⭐ TEAMLAB PLANETS — JÁ COMPRADO ✅ · ENTRADA 10H</span><br>Arte digital imersiva. Piscina rasa com flores projetadas, espelhos infinitos e sala de cristais. Use meias escuras (ficam molhadas). Ingressos já reservados: ¥4.600 <span class="yval">(~R$147)</span> adulto · ¥1.500 <span class="yval">(~R$48)</span> criança. <a href="https://www.teamlab.art/e/planets/" target="_blank" rel="noopener" style="color:var(--blue);font-weight:700;text-decoration:none;">teamlab.art ↗</a><br><br>
+            🕐 <strong style="color:var(--gold)">Sua mãe está certa — vá de manhã!</strong> Abre às 8h30. O primeiro horário tem menos movimento, as salas ficam com poucas pessoas — as flores se movem ao redor do seu corpo, sem interferência de multidão. Depois das 12h fica bem cheio e a experiência perde qualidade.<br><br>
+            Reserve para o horário <strong>09h ou 09h30</strong> — ideal.</div></li>
+          <li><div class="t">17:30</div><div class="ic">🌉</div><div class="tx"><span class="obrig">⭐ ODAIBA — VÁ ANTES DO PÔR DO SOL</span><br>Ponte Rainbow com luz dourada, Gundam 18 m e skyline de Tóquio. Ao anoitecer, a baía iluminada é cinematográfica.</div></li>
+          <li><div class="t">20:00</div><div class="ic">🍷</div><div class="tx"><strong>Jantar de despedida:</strong> Yakiniku Jumbo Shinjuku ~¥3.500 <span class="yval">(~R$112)</span>/pax — churrasco de wagyu no carvão à mesa.</div></li>
+        </ul>
+        <div class="extra"><div class="etl">Se Der Tempo…</div><ul class="ul">
+          <li><strong>TeamLab Borderless (Azabudai Hills)</strong> — reserve com antecedência. Sem piscina, mais salas de arte labiríntica. Flores digitais que transitam entre salas, florestas de luz. ¥3.200 <span class="yval">(~R$102,40)</span></li>
+        </ul></div>
+      </div>
+      <div>
+        <div class="concierge"><div class="ctl">🔑 Concierge — O Que Ninguém Conta</div><div class="sub" style="font-size:.74rem">Em Tsukiji, a faca japonesa artesanal é o melhor presente que se pode trazer do Japão. Uma Togiharu ou Tojiro custa ¥5.000–15.000 <span class="yval">(~R$160–480)</span> e dura décadas. As lojas têm afiador na hora. Despache na mala com embalagem original.<br><br>No TeamLab Planets, há uma sala chamada <em>"Expands in the Universe of Proliferating Lives"</em> — cubo de espelhos com flores que explodem ao redor do corpo. Fique parado por 3 minutos. A instalação responde ao seu corpo.<br><br><strong>Itoya Ginza</strong> (12 andares de papelaria de luxo): compre papel washi e escreva uma carta para cada criança, para ser lida daqui a 10 anos.</div></div>
+        <div class="mem"><div class="mtl">💜 Memória Para Sempre</div><div class="sub" style="font-size:.74rem">TeamLab Planets: criança de 6 anos parada, boca aberta, tentando tocar as flores digitais ao redor do próprio corpo. Talvez o momento mais mágico de toda a viagem.</div></div>
+        <div class="kids"><div class="ktl">🌸 Kids Guide — TeamLab com crianças</div><div class="sub" style="font-size:.74rem">
+          🧦 <strong>Vão entrar na água:</strong> a piscina é rasa (até o joelho das crianças), mas levem <strong>meias escuras e shorts</strong> — as crianças arregaçam a roupa. Há armário para as malas.<br>
+          📵 <strong>Pisos espelhados e escuros:</strong> deem a mão nas salas de espelho e na entrada de água — chão molibrilhante confunde. Mochila nas costas, mãos livres.<br>
+          🎟️ <strong>Já comprado · entrada 10h:</strong> cheguem 15 min antes; de manhã está mais vazio e as crianças aproveitam sem aglomeração.<br>
+          🌸 <strong>Sala favorita das crianças:</strong> a das flores que nascem e somem ao redor do corpo — fiquem parados 2 min, a instalação responde ao movimento delas.
+        </div></div>
+        <div class="shop"><div class="stl">Compras em Ginza</div><ul class="ul">
+          <li><strong>Uniqlo + GU 15 andares</strong> — coleções exclusivas japonesas</li>
+          <li><strong>Itoya Ginza</strong> — papelaria de luxo, 12 andares</li>
+          <li><strong>Tsukiji</strong> — facas artesanais, shoyu premium</li>
+        </ul></div>
+        <div class="tip"><div class="tl2">🍽️ O Que Comer</div><div class="sub" style="font-size:.74rem">Tamagoyaki em Tsukiji · Sushi de balcão em Ginza · Yakiniku wagyu no jantar de despedida</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 17 PARTIDA ══ -->
+<div class="slide" id="sd17">
+  <div class="pad">
+    <div class="stag">17 de junho · Quarta-feira · Partida</div>
+    <div class="dh"><div class="dd">Último Dia</div><div class="dt">✈️ Tóquio → Narita → Brasil</div><div class="dm"><span class="badge bgr">Leve</span><span class="badge br">⚠️ Embarque ~15h · Voo 20h25</span></div></div>
+    <div class="g2" style="gap:14px;margin-top:10px;">
+      <div>
+        <ul class="tl">
+          <li><div class="t">07:00</div><div class="ic">🌅</div><div class="tx">O último onigiri do conbini da viagem. Ritual.</div></li>
+          <li><div class="t">08:00</div><div class="ic">🎒</div><div class="tx">Finalizar as malas. Devolver o SIM card.</div></li>
+          <li><div class="t">08:30</div><div class="ic">🛒</div><div class="tx">Daiso ou Don Quijote — últimas lembranças.</div></li>
+          <li><div class="t">10:30</div><div class="ic">🚆</div><div class="tx"><strong style="color:var(--red)">Asakusa → Narita</strong> — a grande vantagem de ficar em Asakusa: a <strong>Keisei Access Express</strong> parte da própria estação Asakusa direto ao aeroporto, sem reserva e sem sobretaxa de expresso, em ~50–58 min · <strong>~¥1.310</strong> <span class="yval">(~R$42)</span>/pax. <em>Alternativa com bagagem pesada:</em> ônibus direto Asakusa → Narita (malas no bagageiro).</div></li>
+          <li><div class="t">12:00</div><div class="ic">✈️</div><div class="tx">Chegada a Narita. Check-in, despacho e imigração.</div></li>
+          <li><div class="t">13:00</div><div class="ic">🛒</div><div class="tx"><strong>Duty-Free:</strong> KitKat 30+ sabores, Whisky Suntory Toki ¥3.500 <span class="yval">(~R$112)</span>, Pocky, Shiseido. Tax Refund acima de ¥5.000!</div></li>
+          <li><div class="t">~15:00</div><div class="ic">🚪</div><div class="tx"><strong style="color:var(--red)">Embarque no portão.</strong></div></li>
+          <li><div class="t">20:25</div><div class="ic">✈️</div><div class="tx"><strong>Sayonara, Japão! 🎌</strong></div></li>
+        </ul>
+      </div>
+      <div>
+        <div class="mem"><div class="mtl">💜 Memória Para Sempre</div><div class="sub" style="font-size:.74rem">O último onigiri — em 14 dias você comeu dezenas. O último vai parecer o melhor. Guarde esse sabor. É com ele que você vai lembrar do Japão quando chegar em casa.</div></div>
+        <div class="alert"><div class="atl">⚠️ Atenção — Embarque</div><div class="sub" style="font-size:.74rem">Asakusa → Narita às <strong>10h30</strong> (Keisei Access Express ~55 min) · Narita às <strong>12h</strong> · Embarque no portão <strong>~15h</strong></div></div>
+        <div class="prem"><div class="ptl">Duty-Free — O Que Comprar</div><div class="sub" style="font-size:.74rem">KitKat matcha, wasabi, sake · Suntory Toki (2× mais barato que no Brasil) · Shiseido · Hada Labo · Pocky edição especial</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOGÍSTICA ══ -->
+<div class="slide" id="stransport">
+  <div class="pad">
+    <div class="stag">Logística</div>
+    <h2>Transporte & Valores</h2>
+    <div style="background:rgba(240,192,64,.07);border:1px solid rgba(240,192,64,.18);border-radius:8px;padding:7px 12px;font-size:.72rem;color:var(--muted);margin-bottom:13px">💱 <strong style="color:var(--gold)">Câmbio de referência:</strong> ¥1 = R$0,032 · ¥1.000 = R$32</div>
+    <div class="g2" style="gap:16px;">
+      <div>
+        <table class="tbl">
+          <tr><th>Trecho</th><th>Meio</th><th>¥/pax</th><th>R$/pax</th></tr>
+          <tr><td>Narita → Tochigi</td><td>🚗 Tia</td><td>—</td><td style="color:var(--green)">Grátis</td></tr>
+          <tr><td>Tochigi → Osaka</td><td>🚌 Noturno</td><td>✅ Pago</td><td style="color:var(--green)">¥93.100*</td></tr>
+          <tr><td>Osaka ↔ Kyoto</td><td>🚂 JR</td><td>¥570</td><td>~R$18</td></tr>
+          <tr><td>Kyoto → Mishima</td><td>🚄 Shinkansen</td><td>¥6.000</td><td>~R$192</td></tr>
+          <tr><td>Mishima → Kawaguchiko</td><td>🚌 Ônibus exp.</td><td>¥2.300</td><td>~R$74</td></tr>
+          <tr><td>Kawaguchiko → Tóquio</td><td>🚆 Fuji Excursion</td><td>¥4.200</td><td>~R$134</td></tr>
+          <tr><td>Kawaguchiko → Tóquio</td><td>🚌 Ônibus exp.</td><td>¥2.000–2.200</td><td>~R$64–70</td></tr>
+          <tr><td>Metrô Tóquio</td><td>🚇 Suica</td><td>¥200–300</td><td>~R$6–10</td></tr>
+          <tr><td>Tóquio → Disney / DisneySea</td><td>🚂 JR Keiyo</td><td>¥350</td><td>~R$11</td></tr>
+          <tr><td>Tóquio → Kisarazu Outlet</td><td>🚌 Ônibus direto</td><td>¥1.300</td><td>~R$42</td></tr>
+          <tr><td>Asakusa → Narita</td><td>🚆 Keisei Access Exp.</td><td>¥1.310</td><td>~R$42</td></tr>
+        </table>
+      </div>
+      <div>
+        <div class="card cg">
+          <div style="font-weight:700;font-size:.88rem;margin-bottom:8px">✅ JR Pass 7 Dias — Vale a Pena?</div>
+          <table style="width:100%;font-size:.73rem;border-collapse:collapse;">
+            <tr><td style="color:var(--muted);padding:4px 0">Com JR Pass</td><td style="color:var(--text);font-weight:700;text-align:right">¥50.000 · ~R$1.600</td></tr>
+            <tr><td style="color:var(--muted);padding:4px 0">Sem o pass</td><td style="color:var(--text);font-weight:700;text-align:right">¥73.000 · ~R$2.336</td></tr>
+            <tr style="border-top:1px solid var(--border)"><td style="color:var(--green);padding:5px 0;font-weight:700">Economia</td><td style="color:var(--green);font-weight:700;text-align:right">~R$736/pax</td></tr>
+          </table>
+          <div style="font-size:.7rem;color:var(--red);margin-top:8px;font-weight:700">⚠️ Compre ANTES de viajar, no Brasil!</div>
+        </div>
+        <div class="tip"><div class="tl2">💡 Dica do Assento — Fuji Excursion</div><div class="sub" style="font-size:.74rem">Kawaguchiko → Tóquio <strong>não é shinkansen</strong>, é o Limited Express Fuji Excursion. Sente no <strong>lado direito</strong> — o Fuji aparece pela janela nos primeiros minutos. Câmera pronta!</div></div>
+        <div class="tip" style="margin-top:8px;"><div class="tl2">🚌 *Ônibus Tochigi → Osaka (pago)</div><div class="sub" style="font-size:.74rem">Total do grupo: <strong>¥93.100</strong>. Inclui as passagens do ônibus <em>e</em> as entradas da Universal:<br>• Bus adulto ¥13.300 · criança ¥6.650<br>• USJ adulto ¥9.400 · criança ¥5.800 · sênior ¥8.500</div></div>
+        <div class="tip" style="margin-top:8px;"><div class="tl2">🏪 Conbinis — A Base de Tudo</div><div class="sub" style="font-size:.74rem">7-Eleven, Lawson, FamilyMart, 24h. Onigiri ¥130 <span class="yval">(~R$4,16)</span> · Sando ¥250 <span class="yval">(~R$8)</span> · Café ¥160 <span class="yval">(~R$5,12)</span>. Não é fast food — é a refeição cotidiana japonesa.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HOTÉIS ══ -->
+<div class="slide" id="shotel">
+  <div class="pad">
+    <div class="stag">Acomodação</div>
+    <h2>Hotéis Confirmados</h2>
+    <div class="card cgr" style="display:flex;gap:12px;align-items:center;margin-bottom:14px;padding:13px 15px;">
+      <span style="font-size:1.6rem">🏠</span>
+      <div><div style="font-weight:700;font-size:.9rem">04–06/06 · Casa da Família — Tochigi</div><div class="sub">Confirmada. Custo: zero.</div></div>
+    </div>
+    <div class="g3" style="gap:12px;">
+      <div>
+        <div class="lbl" style="margin-bottom:8px">🍜 Osaka · 3 noites (07–09/06)</div>
+        <div class="hb" style="border-top:3px solid var(--gold)">
+          <div class="hl">✅ Hotel Confirmado · ¥65.405</div>
+          <div class="hn">Ostay Namba South</div>
+          <div class="hs" style="margin-top:5px">📍 Região de Namba<br>🚶 Dotonbori e Kuromon Market por perto<br>🧳 Permite deixar as malas no check-out<br>🏪 Restaurantes e conbinis no entorno</div>
+        </div>
+        <div style="margin-top:7px;font-size:.67rem;color:var(--muted)">3 noites</div>
+      </div>
+      <div>
+        <div class="lbl" style="margin-bottom:8px">🏔️ Monte Fuji · 1 noite (10/06)</div>
+        <div class="hb" style="border-top:3px solid var(--gold)">
+          <div class="hl">✅ Hotel Confirmado</div>
+          <div class="hn">Kawaguchiko Hotel</div>
+          <div class="hs" style="margin-top:5px">📍 Funatsu 200, Fujikawaguchiko · Yamanashi<br>🗻 De frente para o Lago Kawaguchi<br>♨️ Onsen termal + banho público<br>🏡 Chalé: Sei, Mary, Hell, Mari, Helena<br>🛏️ Quarto separado: Diogo, Kellyn, Ian</div>
+        </div>
+        <div style="margin-top:7px;font-size:.67rem;color:var(--muted)">1 noite</div>
+      </div>
+      <div>
+        <div class="lbl" style="margin-bottom:8px">🗼 Tóquio · 6 noites (11–17/06)</div>
+        <div class="hb" style="border-top:3px solid var(--gold)">
+          <div class="hl">✅ Hotel Confirmado · ¥216.982</div>
+          <div class="hn">APA Hotel Asakusa Shin-Okachimachi Ekimae</div>
+          <div class="hs" style="margin-top:5px">📍 Motoasakusa 1-6-11, Taito-ku<br>🚇 Estação Shin-Okachimachi (Oedo + Tsukuba Express)<br>⛩️ Pertinho do Senso-ji e da Kappabashi<br>✈️ Keisei Access Express direto para Narita</div>
+        </div>
+        <div style="margin-top:7px;font-size:.67rem;color:var(--muted)">6 noites</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ GASTRONOMIA ══ -->
+<div class="slide" id="sfood">
+  <div class="pad">
+    <div class="stag">Gastronomia</div>
+    <h2>O Que Comer — Dia a Dia</h2>
+    <table class="tbl" style="margin-bottom:14px;">
+      <tr><th>Dia</th><th>Café da Manhã</th><th>Almoço</th><th>Jantar</th></tr>
+      <tr><td>04–06 Tochigi</td><td>Em casa</td><td>Restaurante local</td><td>Izakaya de bairro</td></tr>
+      <tr><td>07 Dom · Osaka</td><td>Conbini</td><td>Okonomiyaki na chapa</td><td>Takoyaki + Kushikatsu</td></tr>
+      <tr><td>08 Seg · Universal</td><td>Conbini</td><td>Butterbeer + Olive Kitchen</td><td>Ramen em Osaka</td></tr>
+      <tr><td>09 Ter · Quioto</td><td>Conbini no trem</td><td>Nishiki Market + Inari Sushi</td><td>Kyoto Station</td></tr>
+      <tr><td>10 Qua · Fuji</td><td>Ekiben na estação</td><td>Hoto (macarrão com abóbora)</td><td>Jantar à beira do lago</td></tr>
+      <tr><td>11 Qui · Fuji→Tóquio</td><td>Café no hotel</td><td>Hoto na região</td><td>Ramen Ichiran</td></tr>
+      <tr><td>12 Sex · Asakusa</td><td>Mochi de morango</td><td>Maid Café Akihabara</td><td>Genki Sushi (família reunida)</td></tr>
+      <tr><td>13 Sáb · Kisarazu</td><td>Hotel</td><td>Praça do outlet</td><td>Yakitori Omoide Yokocho</td></tr>
+      <tr><td>14 Dom · Harajuku</td><td>Crêpe Harajuku</td><td>Gyukatsu wagyu</td><td>Jantar Shinjuku</td></tr>
+      <tr><td>15 Seg · Disney</td><td>Hotel</td><td>Crystal Palace buffet</td><td>Jantar + Electrical Parade</td></tr>
+      <tr><td>16 Ter · Ginza</td><td>Tamagoyaki Tsukiji</td><td>Sushi de balcão em Ginza</td><td>Yakiniku wagyu — despedida</td></tr>
+      <tr><td>17 Qua · Partida</td><td>Último onigiri!</td><td>Ramen no aeroporto</td><td>No voo ✈️</td></tr>
+    </table>
+
+    <div class="g2" style="gap:12px;margin-bottom:12px;">
+      <div>
+        <div class="lbl" style="margin-bottom:7px">🏙️ Pratos Típicos por Região</div>
+        <ul class="tl">
+          <li><div class="t">🍜 Osaka</div><div class="ic"></div><div class="tx"><strong>Takoyaki</strong> (bolinho de polvo), <strong>Okonomiyaki</strong> (panqueca salgada na chapa), <strong>Kushikatsu</strong> (espetinhos empanados). Osaka é conhecida como <em>kuidaore</em> — "comer até cair".</div></li>
+          <li><div class="t">⛩️ Quioto</div><div class="ic"></div><div class="tx"><strong>Kaiseki</strong> (menu degustação tradicional), <strong>Tofu de Kyoto</strong> (mais suave que o de Tóquio), <strong>Yudofu</strong> (tofu cozido em caldo), <strong>Matcha em tudo</strong> — sorvete, mochi, tempurá.</div></li>
+          <li><div class="t">🏔️ Fuji</div><div class="ic"></div><div class="tx"><strong>Hoto</strong> (macarrão grosso com abóbora e miso), <strong>Oshino Hakkai</strong> (truta fresca das nascentes), jantar à beira do lago no hotel.</div></li>
+          <li><div class="t">🗼 Tóquio</div><div class="ic"></div><div class="tx"><strong>Ramen</strong> (cada bairro tem estilo próprio), <strong>Sushi de Tsukiji</strong>, <strong>Yakitori</strong> (frango na brasa), <strong>Tonkatsu</strong> (costeleta empanada), <strong>Wagyu</strong> (carne bovina premium).</div></li>
+        </ul>
+      </div>
+      <div>
+        <div class="alert"><div class="atl">🚫 Evite — Armadilha do Turista</div><div class="sub" style="font-size:.74rem">Se a entrada do restaurante já tem cardápio em <strong>inglês, espanhol ou português</strong>, fotos plastificadas nas paredes e um funcionário na porta chamando clientes — é um restaurante feito para turistas. Cobram 2–3× mais e entregam a versão menos autêntica da culinária japonesa.<br><br>✅ Prefira restaurantes sem cardápio em inglês na vitrine. Use o Google Translate com a câmera. Os funcionários entenderão na mímica e você vai comer o que os japoneses comem — melhor e mais barato.</div></div>
+        <div class="only" style="margin-top:8px;"><div class="otl">Restaurantes Locais — Como Encontrar</div><ul class="ul" style="font-size:.73rem">
+          <li>🎌 <strong>Bandeirinha plástica na porta</strong> — significa que é frequentado por japoneses do bairro</li>
+          <li>📱 <strong>Tabelog 3.5+</strong> — avaliação alta de japoneses, não turistas</li>
+          <li>🍜 <strong>Fila de japoneses</strong> na calçada — sinal infalível de qualidade</li>
+          <li>🏮 <strong>Lanterna vermelha (akachochin)</strong> na porta — izakaya tradicional de bairro</li>
+          <li>🖼️ <strong>Fotos de cera na vitrine (shokuhin sampuru)</strong> — réplicas plásticas dos pratos. Aponte para o que quer. Funciona sempre.</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <div class="g2" style="gap:12px;margin-bottom:12px;">
+      <div class="card cg">
+        <div style="font-weight:700;margin-bottom:6px">🏪 Conbinis — A Vida Japonesa (24h)</div>
+        <div class="sub" style="font-size:.73rem;margin-bottom:7px">7-Eleven, Lawson e FamilyMart — não é fast food, é a refeição cotidiana do japonês. Qualidade surpreendente.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;">
+          <span class="badge bg">Onigiri ¥130 (~R$4,16)</span>
+          <span class="badge bg">Sando ¥250 (~R$8)</span>
+          <span class="badge bg">Café ¥160 (~R$5,12)</span>
+          <span class="badge bg">Matcha ¥180 (~R$5,76)</span>
+          <span class="badge bg">Sorvete ¥200 (~R$6,40)</span>
+          <span class="badge bg">Onigiri grande ¥180 (~R$5,76)</span>
+        </div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--blue);">
+        <div style="font-weight:700;margin-bottom:6px">🍱 Bento no Shinkansen</div>
+        <div class="sub" style="font-size:.73rem">Compre o <strong>Ekiben</strong> na estação antes de embarcar. ¥800–1.500 <span class="yval">(~R$25–48)</span>. Cada região tem seu bento exclusivo — o de Osaka tem takoyaki, o de Kyoto tem kaiseki em miniatura. Uma obra de arte comestível.</div>
+      </div>
+    </div>
+
+    <div class="g2" style="gap:12px;">
+      <div>
+        <div class="lbl" style="margin-bottom:7px">🥤 Bebidas Imperdíveis — Só no Japão</div>
+        <ul class="ul" style="font-size:.73rem">
+          <li><strong>Calpis (カルピス)</strong> — bebida láctea fermentada levemente adocicada. Estranha na primeira gostada. Viciante na segunda. Existe desde 1919.</li>
+          <li><strong>Ramune (ラムネ)</strong> — refrigerante com bolinha de gude no gargalo. Abre-se pressionando a bolinha. Sabores: limão, morango, melão, uva.</li>
+          <li><strong>Yakult original</strong> — o Yakult japonês tem concentração 3× maior que o brasileiro. ¥60 <span class="yval">(~R$1,92)</span> em qualquer conbini.</li>
+          <li><strong>Matcha Latte quente ou gelado</strong> — encontrado em todo conbini e café. O sabor é completamente diferente do matcha exportado.</li>
+          <li><strong>Georgia Coffee (lata)</strong> — café enlatado quente ou gelado nas máquinas. O mais vendido do Japão. ¥130 <span class="yval">(~R$4,16)</span>.</li>
+          <li><strong>Aquarius Zero / Coca-Cola Plus</strong> — a famosa "Coca que emagrece" contém fibra alimentar (dextrina) e é regulamentada como bebida funcional pelo Ministério da Saúde japonês. Reduz absorção de gordura. Vende somente no Japão.</li>
+          <li><strong>Pokka Sapporo Lemon Water</strong> — água com limão real, sem açúcar. Hidratação com sabor natural, muito popular no verão.</li>
+          <li><strong>Amazake (甘酒)</strong> — bebida de arroz fermentado, sem álcool, levemente doce. Servida quente nos templos. Tradição de 1.000 anos.</li>
+          <li><strong>Água</strong> — completamente gratuita em restaurantes, sempre. Peça "o-mizu, kudasai" e ela chegará imediatamente. Nunca cobrada.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="concierge"><div class="ctl">🔑 Concierge — Segredos Gastronômicos</div><div class="sub" style="font-size:.74rem">
+          <strong style="color:var(--text)">Almoço > Jantar:</strong> no Japão, o almoço nos bons restaurantes custa 40–60% menos que o jantar. O menu de almoço (ranchi set) de um restaurante 3 estrelas Michelin pode custar ¥2.000 <span class="yval">(~R$64)</span>. O mesmo restaurante à noite custa ¥15.000+.<br><br>
+          <strong style="color:var(--text)">Vending machines de ramen:</strong> em Tóquio existem restaurantes onde você pede na máquina, recebe o ticket e entrega ao chef. Sem falar com ninguém. Perfeito se não fala japonês.<br><br>
+          <strong style="color:var(--text)">Água grátis em todo lugar:</strong> em qualquer restaurante, peça "o-mizu kudasai" (água, por favor). Sempre gratuita, sempre refil, nunca cobrada.<br><br>
+          <strong style="color:var(--text)">Slurpar é elogio:</strong> fazer barulho ao comer ramen ou soba é sinal de que está gostoso. Os japoneses slurpam forte. Faça o mesmo — é cortesia, não falta de educação.<br><br>
+          <strong style="color:var(--text)">Pagar separado:</strong> raramente possível. O costume japonês é pagar junto e dividir depois. Use o Splitwise no grupo.
+        </div></div>
+        <div class="only" style="margin-top:8px;"><div class="otl">Só Turistas × Só Japoneses</div><ul class="ul" style="font-size:.73rem">
+          <li>🗺️ <strong>Turista:</strong> entra no restaurante com foto de ramen na vitrine e cardápio em inglês em Asakusa</li>
+          <li>🇯🇵 <strong>Japonês:</strong> entra no beco sem placa, senta no balcão de 6 lugares, pede apontando para a panela</li>
+          <li>🇯🇵 <strong>Japonês:</strong> compra onigiri no 7-Eleven às 7h da manhã e come caminhando para o trem</li>
+          <li>🇯🇵 <strong>Japonês:</strong> toma café quente enlatado na máquina de vending antes do expediente</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CLIMA ══ -->
+<div class="slide" id="sclima">
+  <div class="pad">
+    <div class="stag">Preparação</div>
+    <h2>Clima de Junho &amp; O Que Levar</h2>
+    <div class="g2" style="gap:18px;">
+      <div>
+        <div class="lbl" style="margin-bottom:8px">Junho — Tsuyu (Estação das Chuvas)</div>
+        <table class="tbl" style="margin-bottom:12px">
+          <tr><th>Cidade</th><th>Temp.</th><th>Umidade</th><th>☔ Prob.</th></tr>
+          <tr><td>Tochigi</td><td>22–28°C</td><td>72%</td><td>~45%</td></tr>
+          <tr><td>Osaka</td><td>24–31°C</td><td>78%</td><td>~55%</td></tr>
+          <tr><td>Kyoto</td><td>24–30°C</td><td>80%</td><td>~55%</td></tr>
+          <tr><td>Kawaguchiko</td><td>18–25°C</td><td>82%</td><td>~60%</td></tr>
+          <tr><td>Tóquio</td><td>23–29°C</td><td>76%</td><td>~50%</td></tr>
+        </table>
+        <div class="tip"><div class="tl2">☔ O Lado Positivo da Chuva</div><div class="sub" style="font-size:.74rem">Fushimi Inari na neblina é cinematográfico · Menos turistas · Preços de hotel mais baixos · Qualquer templo com chuva tem beleza própria</div></div>
+        <div class="concierge" style="margin-top:9px;"><div class="ctl">🔑 Concierge — Dicas de Clima</div><div class="sub" style="font-size:.74rem">
+          <strong style="color:var(--text)">Guarda-chuva transparente:</strong> compre um no conbini por ¥500 <span class="yval">(~R$16)</span> ao chegar. É o guarda-chuva mais usado no Japão — você vê para onde está andando e faz parte da paisagem da cidade. Não traga um de casa.<br><br>
+          <strong style="color:var(--text)">Junho tem chuva intermitente:</strong> raramente chove o dia inteiro. Costuma chover de manhã ou à tarde, com intervalos. Planeje atrações cobertas para a parte mais chuvosa do dia.<br><br>
+          <strong style="color:var(--text)">Umidade alta:</strong> 75–82% de umidade. Roupas que respiram são essenciais. Evite jeans e algodão grosso — demoram a secar e grudam no corpo. Tecidos sintéticos de secagem rápida (dry fit) são a escolha certa.
+        </div></div>
+        <div class="only" style="margin-top:8px;"><div class="otl">Só Turistas × Só Japoneses</div><ul class="ul" style="font-size:.73rem">
+          <li>🗺️ <strong>Turista:</strong> fica parado na chuva esperando ela passar, perdendo tempo de atração</li>
+          <li>🇯🇵 <strong>Japonês:</strong> compra guarda-chuva transparente no conbini e continua a rotina sem alterar nada</li>
+          <li>🇯🇵 <strong>Japonês:</strong> dobra o guarda-chuva molhado num saco plástico antes de entrar em qualquer estabelecimento — há porta-guarda-chuva na entrada. Use sempre.</li>
+        </ul></div>
+      </div>
+      <div>
+        <div class="g2" style="gap:8px;">
+          <div class="card" style="padding:11px"><div style="font-size:.58rem;font-weight:700;color:var(--gold);margin-bottom:5px;letter-spacing:1px">ROUPAS</div><ul class="ul" style="font-size:.71rem"><li>Camisetas de secagem rápida</li><li>Jaqueta impermeável leve</li><li>Meias de nylon (templos + TeamLab)</li><li>Look para jantar especial</li></ul></div>
+          <div class="card" style="padding:11px"><div style="font-size:.58rem;font-weight:700;color:var(--gold);margin-bottom:5px;letter-spacing:1px">SAÚDE</div><ul class="ul" style="font-size:.71rem"><li>Protetor solar FPS 50+</li><li>Desodorante</li><li>Repelente</li><li>Dipirona e antialérgico</li></ul></div>
+          <div class="card" style="padding:11px"><div style="font-size:.58rem;font-weight:700;color:var(--gold);margin-bottom:5px;letter-spacing:1px">EXTRAS</div><ul class="ul" style="font-size:.71rem"><li>Adaptador tipo A</li><li>Powerbank 20.000 mAh</li><li>Caderno branco (goshuin!)</li><li>Passaporte sempre na bolsa</li></ul></div>
+          <div class="card" style="padding:11px"><div style="font-size:.58rem;font-weight:700;color:var(--gold);margin-bottom:5px;letter-spacing:1px">CRIANÇAS</div><ul class="ul" style="font-size:.71rem"><li>Tablet com filmes offline</li><li>Brinquedos surpresa</li><li>Snacks favoritos</li><li>Moedas ¥100 para as claw machines!</li></ul></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APPS ══ -->
+<div class="slide" id="sapps">
+  <div class="pad">
+    <div class="stag">Tecnologia</div>
+    <h2>Apps Indispensáveis</h2>
+    <div class="g3" style="gap:9px;margin-bottom:14px;">
+      <div class="card" style="border-top:3px solid var(--blue)"><div style="font-size:1.25rem;margin-bottom:4px">🗺️</div><div style="font-weight:700;font-size:.8rem;margin-bottom:2px">Google Maps</div><div class="sub" style="font-size:.69rem">Baixe os mapas OFFLINE: Tóquio, Osaka, Kyoto e Kawaguchiko.</div></div>
+      <div class="card" style="border-top:3px solid var(--blue)"><div style="font-size:1.25rem;margin-bottom:4px">🌐</div><div style="font-weight:700;font-size:.8rem;margin-bottom:2px">Google Translate</div><div class="sub" style="font-size:.69rem">A câmera traduz cardápios. Baixe o japonês offline!</div></div>
+      <div class="card" style="border-top:3px solid var(--blue)"><div style="font-size:1.25rem;margin-bottom:4px">🚄</div><div style="font-weight:700;font-size:.8rem;margin-bottom:2px">Hyperdia</div><div class="sub" style="font-size:.69rem">Horários precisos de todos os trens.</div></div>
+      <div class="card" style="border-top:3px solid var(--gold)"><div style="font-size:1.25rem;margin-bottom:4px">💳</div><div style="font-weight:700;font-size:.8rem;margin-bottom:2px">Suica / Pasmo</div><div class="sub" style="font-size:.69rem">Cartão IC virtual. Metrô, ônibus e conbini.</div></div>
+      <div class="card" style="border-top:3px solid var(--gold)"><div style="font-size:1.25rem;margin-bottom:4px">💰</div><div style="font-weight:700;font-size:.8rem;margin-bottom:2px">Splitwise</div><div class="sub" style="font-size:.69rem">Divida os gastos em ¥. Essencial para 8 pessoas!</div></div>
+      <div class="card" style="border-top:3px solid var(--gold)"><div style="font-size:1.25rem;margin-bottom:4px">🎟️</div><div style="font-weight:700;font-size:.8rem;margin-bottom:2px">Klook</div><div class="sub" style="font-size:.69rem">Ingressos até 25% mais baratos.</div></div>
+      <div class="card" style="border-top:3px solid var(--blue)"><div style="font-size:1.25rem;margin-bottom:4px">🎢</div><div style="font-weight:700;font-size:.8rem;margin-bottom:2px">App USJ</div><div class="sub" style="font-size:.69rem">Reserve o Nintendo World ANTES de entrar!</div></div>
+      <div class="card" style="border-top:3px solid var(--blue)"><div style="font-size:1.25rem;margin-bottom:4px">🏰</div><div style="font-weight:700;font-size:.8rem;margin-bottom:2px">App Disney Tokyo</div><div class="sub" style="font-size:.69rem">Fila virtual + restaurantes + horários.</div></div>
+      <div class="card" style="border-top:3px solid var(--blue)"><div style="font-size:1.25rem;margin-bottom:4px">🍜</div><div style="font-weight:700;font-size:.8rem;margin-bottom:2px">Tabelog</div><div class="sub" style="font-size:.69rem">Avaliações reais de restaurantes japoneses.</div></div>
+    </div>
+    <div class="tip"><div class="tl2">📶 eSIM — Ative no Avião</div><div class="sub" style="font-size:.74rem"><strong>Airalo</strong> (compre antes no Brasil) — ative ao pousar. Ou SIM card em Narita: <strong>Sakura Mobile / IIJmio</strong> ~¥2.000 <span class="yval">(~R$64)</span>/14 dias, dados ilimitados.</div></div>
+    <div class="concierge" style="margin-top:9px;"><div class="ctl">🔑 Concierge — Apps e Tecnologia</div><div class="sub" style="font-size:.74rem">
+      <strong style="color:var(--text)">Google Translate câmera:</strong> aponte para qualquer cardápio, placa ou embalagem — traduz em tempo real sem precisar digitar nada. Baixe o pacote de japonês offline antes de embarcar.<br><br>
+      <strong style="color:var(--text)">Suica no celular:</strong> configure no Apple Wallet ou Google Pay. Funciona em 100% do metrô e em praticamente todo conbini, loja de conveniência e vending machine. Não precisa de dinheiro físico no dia a dia.<br><br>
+      <strong style="color:var(--text)">Klook vs site oficial:</strong> para Shibuya Sky e TeamLab, o Klook costuma ter 15–25% de desconto em relação ao site oficial. Mas para Disney Tokyo, o site oficial tem mais opções de horário. Compare antes de comprar.<br><br>
+      <strong style="color:var(--text)">Carregador portátil:</strong> o dia com metrô, Maps, Translate e fotos consome 100% da bateria. Powerbank de 20.000 mAh serve o grupo inteiro.
+    </div></div>
+    <div class="only" style="margin-top:8px;"><div class="otl">Só Turistas × Só Japoneses</div><ul class="ul" style="font-size:.73rem">
+      <li>🗺️ <strong>Turista:</strong> chega no Japão sem eSIM, perde 1h comprando chip em Narita com a família esperando</li>
+      <li>🇯🇵 <strong>Japonês:</strong> usa Suica em tudo — metrô, conbini, vending machine, até em alguns táxis</li>
+      <li>🇯🇵 <strong>Japonês:</strong> usa o LINE (WhatsApp japonês) para tudo. Se precisar falar com algum serviço local, eles provavelmente têm LINE.</li>
+    </ul></div>
+  </div>
+</div>
+
+<!-- ══ COMPRAS ══ -->
+<div class="slide" id="scompras">
+  <div class="pad">
+    <div class="stag">Guia de Compras</div>
+    <h2>🛍️ O Que Comprar — Produtos 10/10</h2>
+    <div class="prem" style="margin-bottom:13px;"><div class="ptl">💴 Tax Free — Sempre com o Passaporte</div><div class="sub" style="font-size:.74rem">Reembolso de <strong>10% de imposto</strong> em compras acima de <strong>¥5.000</strong> <span class="yval">(~R$160)</span> na mesma loja. ✅ <strong>Passaporte físico obrigatório</strong> — sem ele, não há desconto. ✅ Peça: <strong>"Tax Free, please"</strong>. ✅ Vale em roupas, cosméticos, eletrônicos e souvenirs (não em restaurantes). ✅ Anote tudo nesta aba <strong>'Compras'</strong> para controlar os gastos do grupo.</div></div>
+
+    <div class="g2" style="gap:14px;margin-bottom:13px;">
+      <div>
+        <div class="lbl" style="margin-bottom:8px">👟 Tênis & Calçados — Marcas Mundiais</div>
+        <ul class="ul" style="font-size:.73rem;margin-bottom:10px">
+          <li><strong>Asics</strong> — edições JP exclusivas (Gel-Kayano, Nimbus) custam 40–60% menos que no Brasil. Cores e modelos que nunca chegam ao mercado brasileiro.</li>
+          <li><strong>New Balance</strong> — modelos 990 e 574 em colorways exclusivos do Japão. Procure no Mitsui Kisarazu e Gotemba.</li>
+          <li><strong>Nike / Adidas</strong> — colaborações com marcas japonesas (Sacai, Comme des Garçons) disponíveis antes de qualquer outro país.</li>
+          <li><strong>Onitsuka Tiger</strong> — marca japonesa icônica, criadora do tênis original do Kill Bill. Compre nas lojas próprias em Ginza ou Omotesando.</li>
+        </ul>
+        <div class="lbl" style="margin-bottom:8px">👗 Roupas de Academia</div>
+        <ul class="ul" style="font-size:.73rem;margin-bottom:10px">
+          <li><strong>Uniqlo AIRism & DRY-EX</strong> — tecnologia japonesa de secagem rápida e controle de temperatura. A linha AIRism é incomparável para o calor úmido de junho. 30–50% mais barato que no Brasil.</li>
+          <li><strong>GU (ジーユー)</strong> — irmã mais barata da Uniqlo. Leggins, tops e jaquetas a ¥990–2.990 <span class="yval">(~R$32–96)</span>. Qualidade excelente, preço inacreditável.</li>
+          <li><strong>Descente</strong> — marca japonesa premium de esporte. Coleções de ski, tênis e corrida. Tecnologia superior, muito usada por atletas profissionais.</li>
+        </ul>
+        <div class="lbl" style="margin-bottom:8px">👓 Óculos</div>
+        <ul class="ul" style="font-size:.73rem;margin-bottom:10px">
+          <li><strong>Zoff</strong> — óculos com grau prontos em 30 minutos. Armações a partir de ¥5.500 <span class="yval">(~R$176)</span> incluindo lentes. Mais de 3.000 modelos. Lojas em shoppings de todo o Japão.</li>
+          <li><strong>JINS</strong> — concorrente da Zoff, mesma proposta. Linha JINS SCREEN (filtro luz azul) a partir de ¥5.000 <span class="yval">(~R$160)</span>.</li>
+          <li><strong>Masunaga</strong> — óculos artesanais japoneses premium, feitos à mão em Sabae (capital mundial dos óculos). Preço entre ¥30.000–80.000 <span class="yval">(~R$960–2.560)</span>. Uma obra de arte facial.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="lbl" style="margin-bottom:8px">👜 Bolsas & Acessórios</div>
+        <ul class="ul" style="font-size:.73rem;margin-bottom:10px">
+          <li><strong>Porter (吉田カバン)</strong> — a bolsa japonesa mais querida do país desde 1962. Nylon balístico resistentíssimo, design funcional. A Tanker bag é cult. ¥15.000–60.000 <span class="yval">(~R$480–1.920)</span>. Difícil de encontrar no Brasil.</li>
+          <li><strong>Bagjack</strong> — bolsas técnicas japonesas usadas por ciclistas e executivos. Qualidade alemã com estética japonesa.</li>
+          <li><strong>Marcas de luxo (Ginza/Mitsui)</strong> — Loewe, Coach, Gucci com Tax Refund + outlet = economia real de 30–50% vs Brasil.</li>
+        </ul>
+        <div class="lbl" style="margin-bottom:8px">🦷 Escova de Dente</div>
+        <ul class="ul" style="font-size:.73rem;margin-bottom:10px">
+          <li><strong>Oral-B japonesa</strong> — versões com cerdas ultra-finas (0,01 mm) que não existem fora do Japão. A caixa preta "Premium" é a preferida dos dentistas japoneses.</li>
+          <li><strong>Panasonic Doltz</strong> — escova elétrica sônica com sensor de pressão. ¥8.000–15.000 <span class="yval">(~R$256–480)</span>. No Brasil custa o dobro.</li>
+          <li><strong>Shiseido Oral Care</strong> — linha de cuidados bucais com tecnologia de cosmética. Pasta de dente com carvão ativado e enxaguante branqueador exclusivos.</li>
+        </ul>
+        <div class="lbl" style="margin-bottom:8px">📓 Papelaria</div>
+        <ul class="ul" style="font-size:.73rem;margin-bottom:10px">
+          <li><strong>Hobonichi Techo</strong> — a agenda japonesa mais cult do mundo. Papel Tomoe River ultrafino, sem sangrar. Edições novas saem em novembro — se houver em estoque, compre.</li>
+          <li><strong>Pilot Iroshizuku</strong> — tintas para caneta tinteiro em 24 cores inspiradas na natureza japonesa. ¥1.760 <span class="yval">(~R$56)</span>/frasco. Presente perfeito para quem escreve.</li>
+          <li><strong>Muji papelaria</strong> — canetas gel, cadernos, réguas. Simples, baratas, qualidade excepcional. ¥100–500 <span class="yval">(~R$3,20–16)</span> por item.</li>
+          <li><strong>Itoya Ginza</strong> — 12 andares de papelaria de luxo. O melhor endereço para compras únicas.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="g2" style="gap:14px;margin-bottom:13px;">
+      <div>
+        <div class="lbl" style="margin-bottom:8px">🍫 Chocolates & Doces</div>
+        <ul class="ul" style="font-size:.73rem">
+          <li><strong>KitKat japonês</strong> — 30+ sabores exclusivos: matcha escuro, wasabi, sake, sakura, baunilha de Hokkaido. A caixa do Duty-Free de Narita tem os mais raros. R$ 8–15/unidade. Presente perfeito.</li>
+          <li><strong>Royce' Chocolate</strong> — de Hokkaido. Trufas em caixinha refrigerada, 12 sabores. A versão "Nama Chocolate" derrete na boca. ¥756 <span class="yval">(~R$24)</span>/caixa. Não existe no Brasil.</li>
+          <li><strong>Pocky edição especial</strong> — caixas maiores e sabores exclusivos JP (matcha, morango Tohoku, rum uva). ¥300–600 <span class="yval">(~R$10–19)</span>.</li>
+          <li><strong>Shiroi Koibito</strong> — biscoito de chocolate branco entre duas bolachas. O souvenir mais famoso de Hokkaido. Encontrado em todo aeroporto. ¥1.080 <span class="yval">(~R$35)</span>/caixa 18 un.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="concierge"><div class="ctl">🔑 Queridinhos dos Japoneses que Dão Certo no Brasil</div><div class="sub" style="font-size:.74rem">
+          <strong style="color:var(--text)">Porter (吉田カバン):</strong> toda pessoa que leva para o Brasil vira referência entre amigos. Design silencioso, durabilidade absurda. Funciona em todos os contextos — academia, escritório, viagem.<br><br>
+          <strong style="color:var(--text)">Uniqlo AIRism:</strong> quem prova não volta para o dry-fit normal. Funciona perfeitamente no calor de Curitiba a Fortaleza.<br><br>
+          <strong style="color:var(--text)">Royce' Chocolate:</strong> a caixinha refrigerada chega no Brasil intacta se embrulhada com gelo seco no Duty-Free. É o presente mais elogiado que existe.<br><br>
+          <strong style="color:var(--text)">Pilot Iroshizuku (tintas):</strong> qualquer pessoa que usa caneta tinteiro no Brasil vai perder a cabeça. O mercado de canetas artesanais cresceu muito — esse presente é único.<br><br>
+          <strong style="color:var(--text)">Onitsuka Tiger Mexico 66:</strong> reconhecido no Brasil, mas 60% mais barato no Japão. A versão "Made in Japan" tem couro premium — diferente das versões importadas.<br><br>
+          <strong style="color:var(--text)">Zoff com grau:</strong> óculos prontos em 30 min, design japonês minimalista, ¥5.500. Qualquer amigo que precisa de óculos vai agradecer.
+        </div></div>
+        <div class="only"><div class="otl">Só Turistas × Só Japoneses</div><ul class="ul" style="font-size:.73rem">
+          <li>🗺️ <strong>Turista:</strong> entra no Donki e compra tudo na pressa sem comparar preços</li>
+          <li>🇯🇵 <strong>Japonês:</strong> pesquisa no Kakaku.com (comparador de preços) antes de qualquer compra eletrônica</li>
+          <li>🇯🇵 <strong>Japonês:</strong> usa Tax Refund em tudo acima de ¥5.000, mesmo em farmácias</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VOO & JET LAG ══ -->
+<div class="slide" id="sjetlag">
+  <div class="pad">
+    <div class="stag">Preparação para o Voo</div>
+    <h2>✈️ Dormir no Avião & Vencer o Jet Lag</h2>
+
+    <div class="g2" style="gap:14px;margin-bottom:13px;">
+      <div>
+        <div class="dh" style="margin-bottom:10px"><div class="dd">No Avião</div><div class="dt">🌙 Como Dormir Bem no Voo</div></div>
+        <ul class="tl">
+          <li><div class="t">Assento</div><div class="ic">💺</div><div class="tx"><strong>Janela > Corredor > Meio</strong> — janela permite apoiar a cabeça e controlar a luz. Se for em grupo, os adultos ficam nos assentos do corredor e os mais velhos e crianças na janela. Escolha o assento em <strong>seatguru.com</strong> antes de pagar a taxa de escolha.</div></li>
+          <li><div class="t">Luz</div><div class="ic">😷</div><div class="tx"><strong>Máscara de dormir</strong> é obrigatória — a luz de outros passageiros e das telas destrói o sono. Use uma com proteção lateral (formato moldado, não plana). Compre antes — as do avião são ruins.</div></li>
+          <li><div class="t">Ruído</div><div class="ic">🎧</div><div class="tx"><strong>Fone com cancelamento de ruído</strong> (ANC) faz diferença enorme. Sony WH-1000XM5 ou AirPods Pro eliminam o barulho do motor. Se não tiver, leve tampões de espuma — ¥100 no conbini japonês.</div></li>
+          <li><div class="t">Pescoço</div><div class="ic">🌀</div><div class="tx"><strong>Almofada de pescoço</strong> — no formato de "U invertido" (Trtl Travel Pillow ou similar). Não use a inflável redonda — não sustenta a cabeça inclinada para o lado.</div></li>
+          <li><div class="t">Roupa</div><div class="ic">👘</div><div class="tx">Vista o Uniqlo AIRism no avião — respira bem e não amassa. Leve meias quentes separadas (o avião é frio). Evite jeans — endurece com o frio e impede o sono.</div></li>
+          <li><div class="t">Hidratação</div><div class="ic">💧</div><div class="tx">Avião desidrata rápido — beba 200–300 ml de água a cada hora. Evite álcool e refrigerante nas 6h antes de dormir. Colírio lubrificante para os olhos evita ardência ao acordar.</div></li>
+          <li><div class="t">Melatonina</div><div class="ic">💊</div><div class="tx"><strong>Melatonina 0,5 mg</strong> 30 min antes de dormir no voo. Essa dose baixa é mais eficaz que doses altas. Compre no Brasil (farmácia de manipulação) — no Japão é difícil de encontrar.</div></li>
+          <li><div class="t">Crianças</div><div class="ic">👶</div><div class="tx">Tablet com fone com cancelamento de ruído + conteúdo offline. Lanche favorito na bolsa de mão. Roupas confortáveis. Peça assento de corredor para crianças — mais fácil para levantar sem acordar os outros.</div></li>
+        </ul>
+      </div>
+      <div>
+        <div class="dh" style="margin-bottom:10px"><div class="dd">Na Chegada</div><div class="dt">☀️ Como Vencer o Jet Lag (Brasil → Japão)</div></div>
+        <div class="card" style="border-left:4px solid var(--gold);margin-bottom:10px;padding:12px;">
+          <div style="font-weight:700;font-size:.8rem;margin-bottom:6px">🕐 O Fuso Horário</div>
+          <div class="sub" style="font-size:.73rem">Japão = Brasil + 12 horas (horário de verão) ou +11h (horário normal).<br>Quando é 8h em Curitiba → são 20h em Tóquio.<br><br>Seu cérebro vai querer dormir de dia e acordar de madrugada. O objetivo é <strong>forçar o ritmo japonês desde o primeiro dia.</strong></div>
+        </div>
+        <ul class="tl">
+          <li><div class="t">Antes</div><div class="ic">📅</div><div class="tx">2–3 dias antes de viajar: durma 1h mais cedo a cada dia e acorde 1h mais cedo. Seu relógio interno começa a se ajustar antes mesmo de embarcar.</div></li>
+          <li><div class="t">No voo</div><div class="ic">✈️</div><div class="tx">Assim que embarcar, mude o relógio para o horário de Tóquio. Durma quando for noite em Tóquio — mesmo que seja dia aqui. Isso treina o cérebro.</div></li>
+          <li><div class="t">Chegada manhã</div><div class="ic">🌅</div><div class="tx"><strong>Se chegar de manhã:</strong> não durma. Aguente até às 21h no horário japonês. Duro, mas é o ajuste mais rápido possível. Sol da manhã no rosto acelera.</div></li>
+          <li><div class="t">Chegada noite</div><div class="ic">🌙</div><div class="tx"><strong>Se chegar à noite:</strong> durma normalmente. Não force. Na manhã seguinte, levante às 7h e vá para a luz do sol.</div></li>
+          <li><div class="t">Luz solar</div><div class="ic">☀️</div><div class="tx"><strong>Luz solar de manhã</strong> é o reset mais poderoso do relógio biológico. Saia para a rua entre 7h–9h mesmo que cansado. 20 min de sol regulam a melatonina do corpo.</div></li>
+          <li><div class="t">Melatonina</div><div class="ic">💊</div><div class="tx">Tome 0,5 mg às 22h do horário japonês nos primeiros 3 dias. Evite doses altas (5 mg+) — causam torpor no dia seguinte.</div></li>
+          <li><div class="t">Refeições</div><div class="ic">🍱</div><div class="tx">Coma nas horas das refeições japonesas desde o primeiro dia — mesmo sem fome. O horário das refeições é o segundo maior regulador do relógio biológico.</div></li>
+          <li><div class="t">Crianças</div><div class="ic">👶</div><div class="tx">Crianças de 6 anos se ajustam mais rápido que adultos — em geral 1–2 dias. Não deixe dormir depois das 15h local no primeiro dia. Banho quente à noite acelera o sono.</div></li>
+        </ul>
+        <div class="tip"><div class="tl2">💡 A Regra de Ouro</div><div class="sub" style="font-size:.74rem">Não planeje atrações exigentes no primeiro dia (04/06). Esse dia existe exatamente para o ajuste. Em Tochigi, com a família, é o ambiente perfeito para o reset natural.</div></div>
+        <div class="only" style="margin-top:8px;"><div class="otl">Só Turistas × Só Japoneses</div><ul class="ul" style="font-size:.73rem">
+          <li>🗺️ <strong>Turista:</strong> chega no Japão com jet lag, fica no hotel descansando e perde o primeiro dia inteiro</li>
+          <li>🇯🇵 <strong>Japonês em viagem:</strong> muda o relógio no avião e já segue o horário do destino desde o embarque</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ETIQUETA ══ -->
+<div class="slide" id="setiqueta">
+  <div class="pad">
+    <div class="stag">Cultura Japonesa</div>
+    <h2>Etiqueta — O Essencial</h2>
+    <table class="tbl" style="margin-bottom:13px;">
+      <tr><th>Situação</th><th style="color:#0d1117">✅ Faça</th><th style="color:#0d1117">❌ Evite</th></tr>
+      <tr><td>Templos</td><td style="color:var(--green)">Retire os sapatos, fale baixo</td><td style="color:var(--red)">Flash, tocar estátuas</td></tr>
+      <tr><td>Metrô</td><td style="color:var(--green)">Ceda o assento, silêncio</td><td style="color:var(--red)">Falar ao telefone, comer</td></tr>
+      <tr><td>Restaurante</td><td style="color:var(--green)">"Itadakimasu" · slurpar é OK!</td><td style="color:var(--red)">Deixar gorjeta (é ofensivo!)</td></tr>
+      <tr><td>Onsen</td><td style="color:var(--green)">Banhe-se antes, silêncio</td><td style="color:var(--red)">Celular, sabonete na água</td></tr>
+      <tr><td>Gion</td><td style="color:var(--green)">Admire de longe</td><td style="color:var(--red)">Fotografar gueixas</td></tr>
+      <tr><td>Compras</td><td style="color:var(--green)">Tax-Free acima de ¥5.000 <span class="yval">(~R$160)</span></td><td style="color:var(--red)">Barganhar</td></tr>
+      <tr><td>Dinheiro</td><td style="color:var(--green)">Use as duas mãos e a bandeja</td><td style="color:var(--red)">Dar gorjeta, jogar notas</td></tr>
+      <tr><td>Rua</td><td style="color:var(--green)">Lado esquerdo, lixo no conbini</td><td style="color:var(--red)">Comer caminhando (exceto Dotonbori)</td></tr>
+    </table>
+    <div class="tip"><div class="tl2">💡 Regra de Ouro</div><div class="sub" style="font-size:.74rem">"Arigatou gozaimasu" + inclinação de 15° abre portas em qualquer situação no Japão.</div></div>
+  </div>
+</div>
+
+<!-- ══ TRENS & METRÔ ══ -->
+<div class="slide" id="strens">
+  <div class="pad">
+    <div class="stag">Guia de Transporte</div>
+    <h2>🚆 Como Usar Trens, Metrô e Shinkansen</h2>
+
+    <div class="g2" style="gap:14px;margin-bottom:14px;">
+
+      <div>
+        <div class="dh" style="margin-bottom:10px"><div class="dd">Passo a Passo</div><div class="dt">🚇 Metrô e Trens Urbanos</div></div>
+        <ul class="tl">
+          <li><div class="t">1. Cartão</div><div class="ic">💳</div><div class="tx"><strong>Use sempre o Suica</strong> — nunca compre ticket individual. <strong>No iPhone:</strong> abra o app <strong>Carteira (Wallet)</strong> → toque em <strong>+</strong> → <strong>Transit Card</strong> → <strong>Suica</strong> → defina o valor e recarregue pelo Apple Pay. Funciona até com o iPhone desligado e é nativo, sem app externo. Toque no leitor ao entrar e ao sair da catraca — o valor é descontado sozinho.</div></li>
+          <li><div class="t">2. Destino</div><div class="ic">🗺️</div><div class="tx"><strong>Google Maps</strong> mostra a linha, o número de paradas e a saída certa. Digite o destino em português — ele encontra. Sempre confira o nome da saída (ex: "Saída A3") antes de chegar.</div></li>
+          <li><div class="t">3. Plataforma</div><div class="ic">🚂</div><div class="tx">Olhe o <strong>sentido do trem</strong> no painel: o nome do terminal final aparece no display. Se o seu destino estiver entre a estação atual e esse terminal, você está no trem certo.</div></li>
+          <li><div class="t">4. Horários</div><div class="ic">⏱️</div><div class="tx">Os trens são <strong>pontuais ao segundo</strong>. Não há atraso. Se o app diz 09h14, o trem parte às 09h14. Esteja na plataforma 2 min antes.</div></li>
+          <li><div class="t">5. Catraca</div><div class="ic">🚪</div><div class="tx">Encoste o celular ou cartão no leitor — bip verde = pode passar. Se der erro, procure o atendente na cabine lateral. Nunca force a catraca.</div></li>
+          <li><div class="t">6. No vagão</div><div class="ic">🤫</div><div class="tx">Silêncio absoluto. Celular no modo mudo. Não atenda ligações. Não coma. Ceda o assento marcado com símbolo de idoso ou grávida — é obrigação social, não cortesia.</div></li>
+          <li><div class="t">7. Saída</div><div class="ic">🚶</div><div class="tx">Ao sair, encose o cartão novamente na catraca. Siga as placas de saída — cada número leva a uma rua diferente. Sempre confira no Maps qual saída usar antes de sair do trem.</div></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="dh" style="margin-bottom:10px"><div class="dd">Trem Bala</div><div class="dt">🚄 Shinkansen — Como Funciona</div></div>
+        <ul class="tl">
+          <li><div class="t">Bilhete</div><div class="ic">🎫</div><div class="tx"><strong>Com JR Pass:</strong> vá ao balcão JR na estação, mostre o pass e reserve assento — gratuito. Faça isso com antecedência, especialmente para o horário das 17h.<br><strong>Sem JR Pass:</strong> compre na máquina ou no guichê. Selecione "reserved seat" para garantir lugar.</div></li>
+          <li><div class="t">Assento</div><div class="ic">💺</div><div class="tx">Escolha <strong>"window seat"</strong> (janela). No trecho Kawaguchiko → Tóquio, peça o <strong>lado D (direito)</strong> — o Monte Fuji aparece pela janela entre Mishima e Shin-Fuji. Câmera pronta!</div></li>
+          <li><div class="t">Bento</div><div class="ic">🍱</div><div class="tx">Compre o <strong>Ekiben</strong> (bento de estação) antes de embarcar — nas lojas da plataforma ou do saguão. Comer no shinkansen é permitido e faz parte da experiência. ¥800–1.500 <span class="yval">(~R$25–48)</span></div></li>
+          <li><div class="t">Velocidade</div><div class="ic">⚡</div><div class="tx">O Shinkansen atinge <strong>320 km/h</strong>. A aceleração é suave, mas ao passar por outra estação sem parar, você sentirá o impacto de pressão. É normal.</div></li>
+          <li><div class="t">Bagagem</div><div class="ic">🎒</div><div class="tx"><strong>Regra oficial:</strong> malas com soma de dimensões acima de 160 cm precisam de <strong>reserva antecipada de espaço</strong> (oversized baggage reservation) — gratuita, mas obrigatória ao comprar o bilhete ou no guichê JR. Sem reserva, você não pode embarcar com mala grande.<br><br><strong>O que fazer na prática:</strong><br>✅ Reserve o espaço junto com o assento no guichê JR — peça "oversized baggage space"<br>✅ O espaço fica <strong>atrás do último assento da seção</strong>, num compartimento fechado com trava. Só quem reservou pode usar<br>✅ Coloque a mala antes de sentar e retire antes de chegar à estação de destino<br><br><strong>Alternativa recomendada — Takkyubin (ヤマト運輸):</strong> serviço de entrega de mala de hotel a hotel. Entregue a mala na recepção até às 12h e ela chega no hotel seguinte no dia seguinte. ¥1.500–2.000 <span class="yval">(~R$48–64)</span>/mala. Reservas de 3+ dias em cidades diferentes: use sempre. Você viaja leve e a mala chega sozinha.</div></li>
+        </ul>
+
+        <div class="tip"><div class="tl2">🗺️ App Essencial — Hyperdia</div><div class="sub" style="font-size:.74rem">Digite origem e destino em inglês. Mostra todas as opções com horários, trocas e tempo exato. Mais preciso que o Google Maps para trens japoneses.</div></div>
+      </div>
+    </div>
+
+    <div class="lbl" style="margin-bottom:9px">O Que é Cada Linha — e Para Que Serve</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;margin-bottom:14px;">
+      <div class="card" style="border-left:4px solid #e74c3c;">
+        <div style="font-weight:700;font-size:.8rem;margin-bottom:5px">🔴 JR — Japan Railways</div>
+        <div class="sub" style="font-size:.72rem"><strong style="color:var(--text)">O que é:</strong> empresa nacional de trens do Japão. Tem linhas locais, expressas e o Shinkansen. É a que cobre mais distâncias e a que o JR Pass cobre.<br><br><strong style="color:var(--text)">Família vai usar:</strong> JR Keiyo (Asakusa → Disney/DisneySea via Tóquio, ~40 min · ¥350 <span class="yval">~R$11</span>) · JR Kyoto Line (Osaka → Kyoto, ~20 min · ¥570 <span class="yval">~R$18</span>) · Shinkansen Tokaido (Kyoto → Mishima e Osaka → Tóquio, coberto pelo JR Pass). <strong style="color:var(--red)">Kawaguchiko não tem shinkansen</strong> — use o Fuji Excursion.</div>
+      </div>
+      <div class="card" style="border-left:4px solid #2980b9;">
+        <div style="font-weight:700;font-size:.8rem;margin-bottom:5px">🔵 Linha Hibiya (日比谷線)</div>
+        <div class="sub" style="font-size:.72rem"><strong style="color:var(--text)">O que é:</strong> metrô operado pela Tokyo Metro. Cor cinza-prata nos mapas. Atravessa o centro de Tóquio no sentido nordeste-sudoeste.<br><br><strong style="color:var(--text)">Família vai usar:</strong> partindo de Asakusa, a Ginza e a Hibiya conectam o centro — Asakusa → Ginza, Ueno e Akihabara ficam pertinho. ¥170–250 <span class="yval">(~R$5–8)</span></div>
+      </div>
+      <div class="card" style="border-left:4px solid #1a6696;">
+        <div style="font-weight:700;font-size:.8rem;margin-bottom:5px">🔷 Linha Tozai (東西線)</div>
+        <div class="sub" style="font-size:.72rem"><strong style="color:var(--text)">O que é:</strong> metrô Tokyo Metro. Cor azul-escura nos mapas. Vai no sentido leste-oeste — Tozai significa literalmente "Leste-Oeste" em japonês.<br><br><strong style="color:var(--text)">Família vai usar:</strong> de Asakusa, a Tsukuba Express e a Oedo (do hotel Shin-Okachimachi) levam a Akihabara, Ueno e Shinjuku. ¥200–270 <span class="yval">(~R$6–9)</span></div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--green);">
+        <div style="font-weight:700;font-size:.8rem;margin-bottom:5px">🟢 JR Yamanote Line (山手線)</div>
+        <div class="sub" style="font-size:.72rem"><strong style="color:var(--text)">O que é:</strong> linha circular da JR que conecta todos os grandes bairros de Tóquio. É a linha mais famosa da cidade — um anel que passa por Shibuya, Shinjuku, Akihabara, Ueno e Ikebukuro.<br><br><strong style="color:var(--text)">Família vai usar:</strong> para se locomover entre bairros de Tóquio. Passa a cada 2–4 min. Coberto pelo JR Pass.</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--purple);">
+        <div style="font-weight:700;font-size:.8rem;margin-bottom:5px">🟣 Shinkansen (新幹線)</div>
+        <div class="sub" style="font-size:.72rem"><strong style="color:var(--text)">O que é:</strong> o trem-bala japonês. Opera em linhas separadas das normais. Velocidade até 320 km/h. Pontualidade absoluta.<br><br><strong style="color:var(--text)">Família vai usar:</strong> Kyoto → Mishima (a caminho do Fuji) e Osaka → Tóquio. Coberto pelo JR Pass. <strong style="color:var(--red)">Atenção:</strong> Kawaguchiko NÃO tem shinkansen — de lá usa-se o Limited Express Fuji Excursion (ver dia 11).</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--orange);">
+        <div style="font-weight:700;font-size:.8rem;margin-bottom:5px">🟠 Ônibus Fuji Excursion / Kisarazu</div>
+        <div class="sub" style="font-size:.72rem"><strong style="color:var(--text)">O que é:</strong> ônibus de longa distância para destinos fora do metrô.<br><br><strong style="color:var(--text)">Família vai usar:</strong> Shinjuku → Kawaguchiko (~2h, parcialmente coberto pelo JR Pass) e Tokyo Station → Kisarazu Outlet (~50 min · ¥1.300 <span class="yval">~R$42</span>). Reserve com antecedência pelo Klook.</div>
+      </div>
+    </div>
+
+    <div class="concierge" style="margin-top:14px;"><div class="ctl">🔑 Concierge — O Que Ninguém Conta</div>
+      <div class="g2" style="gap:11px;margin-top:6px;">
+        <div class="sub" style="font-size:.74rem"><strong style="color:var(--text)">Se errar o trem:</strong> calma. Saia na próxima estação, encose o cartão na catraca de saída e entre novamente na direção certa. O sistema desconta só a diferença. Nunca pule a catraca.<br><br><strong style="color:var(--text)">Perdeu a última catraca:</strong> se o saldo do Suica não cobrir a tarifa, vá ao guichê de atendimento. O funcionário ajusta na hora, sem julgamento.</div>
+        <div class="sub" style="font-size:.74rem"><strong style="color:var(--text)">Lotação máxima:</strong> às 8h–9h, os trens em Tóquio ficam muito cheios. Com crianças e idosos, prefira sair antes das 7h30 ou depois das 9h30 nos dias de metrô urbano.<br><br><strong style="color:var(--text)">Vagão da frente:</strong> nos trens regionais, o vagão 1 (frente) costuma ser o menos lotado. E em muitas linhas, há vagão reservado para mulheres nos horários de pico.<br><br><strong style="color:var(--text)">🚉 Baldeação em Shibuya:</strong> a estação é enorme e o <em>norikae</em> (troca de linha) pode levar até <strong>19 minutos</strong> só de caminhada interna. Conte esse tempo extra ao planejar conexões por ali.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ERROS ══ -->
+<div class="slide" id="serros">
+  <div class="pad">
+    <div class="stag">Guia de Sobrevivência</div>
+    <h2>⚠️ Erros que Fazem Brasileiros Perderem Tempo no Japão</h2>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:14px;line-height:1.65">A maioria dos roteiros não fala sobre isso. Estes são os erros reais — cometidos por brasileiros experientes em viagem — que transformam dias incríveis em dias frustrantes.</p>
+    <div id="erros-grid"></div>
+  </div>
+</div>
+
+<!-- ══ PALAVRAS ══ -->
+<div class="slide" id="spalavras">
+  <div class="pad">
+    <div class="stag">Idioma · Japonês Essencial</div>
+    <h2>Frases que Você Vai Usar Todo Dia</h2>
+    <div class="g2" style="gap:9px;margin-bottom:13px;">
+      <div class="card cg"><div style="font-weight:700;color:var(--gold);font-size:.9rem">Arigatou gozaimasu</div><div style="font-size:.68rem;color:var(--blue);margin:3px 0">(Ari-ga-tô go-zai-mas)</div><div class="sub">Muito obrigado(a) — use em todo lugar</div></div>
+      <div class="card"><div style="font-weight:700;color:var(--gold);font-size:.9rem">Sumimasen</div><div style="font-size:.68rem;color:var(--blue);margin:3px 0">(Su-mi-ma-sen)</div><div class="sub">Com licença / para chamar o garçom</div></div>
+      <div class="card cg"><div style="font-weight:700;color:var(--gold);font-size:.9rem">Itadakimasu</div><div style="font-size:.68rem;color:var(--blue);margin:3px 0">(I-ta-da-ki-mas)</div><div class="sub">Antes de comer — obrigatório</div></div>
+      <div class="card"><div style="font-weight:700;color:var(--gold);font-size:.9rem">Gochisousama</div><div style="font-size:.68rem;color:var(--blue);margin:3px 0">(Go-chi-so-sama)</div><div class="sub">Após comer — "foi um banquete"</div></div>
+      <div class="card"><div style="font-weight:700;color:var(--gold);font-size:.9rem">Eigo wakarimasu ka?</div><div style="font-size:.68rem;color:var(--blue);margin:3px 0">(Ei-go wa-ka-ri-mas-ka)</div><div class="sub">Você fala inglês?</div></div>
+      <div class="card"><div style="font-weight:700;color:var(--gold);font-size:.9rem">Ikura desu ka?</div><div style="font-size:.68rem;color:var(--blue);margin:3px 0">(I-ku-ra des-ka)</div><div class="sub">Quanto custa?</div></div>
+      <div class="card"><div style="font-weight:700;color:var(--gold);font-size:.9rem">Toire wa doko?</div><div style="font-size:.68rem;color:var(--blue);margin:3px 0">(Toi-re wa do-ko)</div><div class="sub">Onde fica o banheiro?</div></div>
+      <div class="card"><div style="font-weight:700;color:var(--gold);font-size:.9rem">Kawaii!</div><div style="font-size:.68rem;color:var(--blue);margin:3px 0">(Ka-wai-i)</div><div class="sub">Que fofo! — as crianças vão usar o dia todo</div></div>
+    </div>
+    <div class="tip"><div class="tl2">🗣️ Para as Crianças</div><div class="sub" style="font-size:.74rem">Ensine "Arigatou!" e "Kawaii!" antes de embarcar. Os japoneses adoram crianças estrangeiras tentando falar o idioma!</div></div>
+  </div>
+</div>
+
+<!-- ══ FINAL ══ -->
+<div class="slide" id="sfin">
+  <div class="pad" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-height:80%;">
+    <div style="font-size:clamp(3.5rem,10vw,6rem);animation:pulse 2s infinite;margin-bottom:14px">🎌</div>
+    <div class="stag">Família Hamada · Junho 2026</div>
+    <h1 style="margin:8px 0 14px">Boa<br><span style="color:var(--gold)">Viagem!</span></h1>
+    <p style="max-width:480px;font-size:clamp(.8rem,1.8vw,.96rem);line-height:1.9;color:var(--muted)">14 dias de memórias que durarão a vida toda.<br>O Japão espera por vocês.<br><strong style="color:var(--text)">Uma primeira viagem ao Japão nunca se esquece.</strong> 🌸</p>
+    <div style="margin-top:18px;display:flex;gap:7px;flex-wrap:wrap;justify-content:center;">
+      <span class="badge bg">04–17 Junho</span>
+      <span class="badge bb">8 viajantes</span>
+      <span class="badge bgr">14 dias</span>
+      <span class="badge bpu">Memórias eternas</span>
+    </div>
+    <div style="margin-top:22px;font-size:1.3rem;letter-spacing:.35em;color:rgba(240,192,64,.3);">いってらっしゃい</div>
+    <p style="margin-top:6px;font-size:.64rem;color:var(--border)">Itterasshai — "Vai e volte bem!"</p>
+  </div>
+</div>
+
+</div>
+<div id="nav">
+  <button class="nbtn" id="btnp" onclick="go(-1)" disabled>← Anterior</button>
+  <div id="pw"><div id="pb"></div></div>
+  <div id="sc"></div>
+  <button class="nbtn" id="btnn" onclick="go(1)">Próximo →</button>
+</div>
+
+<script>
+const slides=Array.from(document.querySelectorAll('.slide'));
+let cur=0;
+const idx=id=>slides.findIndex(s=>s.id===id);
+function gc(id){const n=idx(id);if(n<0)return;jump(n);}
+function jump(n){if(n===cur)return;slides[cur].classList.remove('active');slides[cur].classList.add('prev');const o=cur;cur=n;slides[cur].classList.add('active');setTimeout(()=>slides[o].classList.remove('prev'),400);sync();}
+function go(d){const n=cur+d;if(n<0||n>=slides.length)return;jump(n);}
+function sync(){
+  document.getElementById('btnp').disabled=cur===0;
+  document.getElementById('btnn').disabled=cur===slides.length-1;
+  document.getElementById('sc').textContent=`${cur+1} / ${slides.length}`;
+  document.getElementById('pb').style.width=`${(cur/(slides.length-1))*100}%`;
+  const cn=document.getElementById('cn');
+  document.querySelectorAll('.cb').forEach(b=>{
+    const m=b.getAttribute('onclick').match(/gc\('([^']+)'\)/);
+    if(m){
+      const active=slides[cur].id===m[1];
+      b.classList.toggle('on',active);
+      if(active){
+        // scroll the active button into view within the nav bar
+        b.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+      }
+    }
+  });
+}
+const erros=[
+  {icon:'🏃',title:'Tentar fazer Tóquio correndo',desc:'5 dias em Tóquio parece muito. Não é. Tóquio tem 5 regiões completamente diferentes, cada uma com personalidade própria — Asakusa (templos e tradição), Shibuya (modernidade e juventude), Shinjuku (gastronomia e entretenimento), Ginza (luxo e design) e Akihabara (tecnologia e cultura pop). Quem tenta ver tudo em 2 dias não vê nada de verdade. Reserve 5 dias para explorar essas 5 regiões com calma — é o mínimo para sentir cada uma.',fix:'1 região por dia. Escolha 2 atrações por bairro. O resto é o caminho entre elas — e é aí que o Japão acontece.',tag:'Erro mais comum'},
+  {icon:'🎡',title:'Deixar Disney e TeamLab para a última hora',desc:'São os ingressos que mais esgotam no Japão. A Disney em segunda-feira tem 40% menos fila — mas sem reserva, você nem entra. O TeamLab Planets esgota semanas antes no verão.',fix:'Reserve com no mínimo 3 semanas. Klook ou site oficial.',tag:'Impacto alto'},
+  {icon:'⏰',title:'Chegar tarde em Quioto',desc:'Fushimi Inari depois das 10h é um corredor humano. O Arashiyama depois das 9h tem fila para entrar no bambuzal. O que é espiritual de manhã vira trilha de selfie stick às 11h.',fix:'Pegue o trem das 7h50. Chegue em Fushimi às 8h30.',tag:'Muito comum'},
+  {icon:'🧳',title:'Carregar malas excessivas e pesadas',desc:'O metrô japonês não tem elevador em todas as estações. Subir 4 lances com mala de 30 kg às 8h, com crianças, idosos e lotação máxima, é um pesadelo real. No shinkansen, malas acima de 160 cm precisam de reserva antecipada — sem ela, você não embarca.',fix:'Uma mala por adulto. Use o Takkyubin (¥1.500/mala): entregue na recepção até as 12h e a mala chega no próximo hotel no dia seguinte.',tag:'Físico'},
+  {icon:'💳',title:'Não usar o cartão IC (Suica/Pasmo)',desc:'Pagar o metrô com cédulas a cada estação, com fila atrás e tudo em japonês, é o roteiro perfeito para a ansiedade. Japoneses entram e saem em 3 segundos com o cartão.',fix:'Configure o Suica no Apple Wallet ou Google Pay antes de viajar. Recarregue ¥5.000 (~R$160) por pessoa no início.',tag:'Resolvível em 10 min'},
+  {icon:'🗺️',title:'Subestimar o tempo de deslocamento',desc:'De Shibuya para Asakusa são 40 min de metrô. De Osaka para Kyoto são 20 min de trem, mais 15 min de caminhada na estação. Muita gente planeja 5 atrações em cidades diferentes no mesmo dia.',fix:'Use o Hyperdia para calcular. Acrescente 20 min de margem em cada trecho.',tag:'Planejamento'},
+  {icon:'💴',title:'Não usar o Tax Free por falta do passaporte',desc:'10% de desconto. Em compras de ¥50.000 (~R$1.600), são ¥5.000 (~R$160) de volta. Muitos brasileiros deixam o passaporte no hotel "por segurança".',fix:'Passaporte sempre na bolsa. É seguro, necessário e rende 10% a mais em tudo.',tag:'Perda financeira real'},
+  {icon:'🍜',title:'Comer só em restaurantes turísticos',desc:'Restaurantes com cardápio em português na entrada de Asakusa cobram 3× mais e entregam 1/3 do sabor. O melhor ramen de Tóquio fica num beco sem sinalização em inglês.',fix:'Use o Tabelog para restaurantes locais. Procure a bandeirinha colorida na porta — sinal de que o lugar é frequentado por japoneses.',tag:'Experiência'},
+  {icon:'📸',title:'Reservar o Shibuya Sky no horário errado',desc:'Fotos ao meio-dia são planas, sem contraste. Muita gente reserva às 13h porque tinha vaga. O pôr do sol (17h–18h30) é a experiência que vale 10× mais.',fix:'Reserve especificamente para as 17h ou 18h. No Klook sai mais barato e já filtra por horário.',tag:'Experiência'},
+  {icon:'🧘',title:'Não reservar tempo para o inesperado',desc:'O Japão não é só atrações. Um conbini às 7h, um jardim vazio, uma rua molhada com guarda-chuva transparente — esses momentos não têm ingresso e ficam para sempre.',fix:'Deixe uma tarde por semana completamente livre. O melhor da viagem costuma acontecer ali.',tag:'Filosófico'},
+];
+function buildErros(){
+  const g=document.getElementById('erros-grid');
+  if(!g)return;
+  g.style.display='grid';
+  g.style.gridTemplateColumns='repeat(auto-fill,minmax(285px,1fr))';
+  g.style.gap='9px';
+  erros.forEach(e=>{
+    const div=document.createElement('div');
+    div.className='yerr';
+    div.innerHTML=`<div class="etit">${e.icon} ${e.title} <span class="badge bor" style="font-size:.55rem;vertical-align:middle">${e.tag}</span></div><div class="sub" style="font-size:.72rem;line-height:1.6;margin-top:4px">${e.desc}</div><div class="efix" style="margin-top:5px">✅ Como evitar: ${e.fix}</div>`;
+    g.appendChild(div);
+  });
+}
+buildErros();
+const lists={
+  cl1:['✅ Passagens aéreas','✅ Ônibus noturno Tochigi → Osaka (06/06 · 21h20) — ¥93.100 (inclui USJ)','✅ Universal Studios Japan (08/06) — ¥67.100','✅ TeamLab Planets (16/06 · 10h) — ¥4.600 adulto / ¥1.500 criança','✅ Hotel Osaka — Ostay Namba South (¥65.405)','✅ Hotel Monte Fuji — Kawaguchiko Hotel','✅ Hotel Tóquio — APA Asakusa Shin-Okachimachi (¥216.982)','✅ Casa da família confirmada (04–06/06)'],
+  cl2:['🚆 Kyoto → Mishima → Kawaguchiko (10/06) — comprar shinkansen + ônibus','🚆 Kawaguchiko → Asakusa (11/06) — reservar Fuji Excursion (assento obrigatório)','🚆 Asakusa → Narita (17/06) — Keisei Access Express (~¥1.310/pax)','Disney Tokyo — Klook (15/06) — esgota rápido!','Shibuya Sky Grupo 1 (12/06 · 17h/18h) — Mãe, Mary, Ké, Diogo — agendar a partir do dia 29','Shibuya Sky Grupo 2 (14/06 · 17h/18h) — Mari, Hell — agendar a partir do dia 29','Express Pass USJ (Express 7 recomendado) — confirmar que inclui Nintendo World','DisneySea (12/06) — comprar ingresso com antecedência','Cerimônia do Chá em Quioto — Camellia Tea (09/06)','Mitsui Outlet Kisarazu — Klook ou site oficial (13/06)'],
+  cl3:['📝 Cadastrar no Visit Japan Web (vjw.digital.go.jp) — até 6h antes do pouso','✈️ URGENTE — corrigir nome na passagem aérea de Kellyn e Diogo (foi emitido errado): o nome precisa ser idêntico ao do passaporte. Contate a cia aérea/agência o quanto antes — correção de nome costuma ter prazo e taxa.','Passaportes (validade mín. 6 meses após 17/06)','Câmbio: ¥80.000–100.000 por adulto (~R$2.560–3.200)','Cartão de crédito/débito internacional (avisar ao banco)','Seguro viagem (8 pessoas)','Cópias dos passaportes (digital + físico)','eSIM Airalo ou SIM card em Narita (Sakura Mobile)','Passaporte SEMPRE na bolsa — obrigatório para o Tax Free!','Caderno em branco para o goshuin nos templos'],
+  cl4:['Google Maps + mapas offline (Tóquio, Osaka, Kyoto, Kawaguchiko)','Google Translate + japonês offline (câmera traduz cardápios)','Suica no iPhone: app Carteira (Wallet) → + → Transit Card → Suica → recarregar (funciona até desligado)','Splitwise — divisão de gastos do grupo em ¥','Hyperdia — horários de trens, shinkansen e Fuji Excursion','Klook — ingressos até 25% mais baratos','App USJ — Area Timed Entry do Nintendo World!','App Disney Tokyo — fila virtual + restaurantes + horários','Tabelog — avaliações de restaurantes japoneses','Visit Japan Web — QR de imigração + alfândega'],
+};
+function buildCL(id,items){
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML=items.map((t,i)=>`<div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);"><input type="checkbox" id="${id}${i}" style="width:13px;height:13px;accent-color:var(--gold);margin-top:3px;flex-shrink:0;cursor:pointer;" onchange="var l=this.nextElementSibling;l.style.textDecoration=this.checked?'line-through':'none';l.style.color=this.checked?'var(--border)':'var(--muted)';"><label style="font-size:.75rem;color:var(--muted);cursor:pointer;line-height:1.5;">${t}</label></div>`).join('');
+}
+Object.entries(lists).forEach(([id,items])=>buildCL(id,items));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);
+});
+sync();
+</script>
+</body>
+</html>
